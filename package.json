@@ -1,0 +1,71 @@
+{
+  "name": "bprn-sdk-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\""
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "winston": "^3.18.3",
+      "fabric-ca-client": "2.2",
+      "fabric-network": "2.2",
+      "fabric-protos": "^2.2.20"
+	},
+  "devDependencies": {
+    "@beatoz/web3-accounts": "^1.6.5",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.6.1",
+    "fabric-ca-client": "2.2",
+    "fabric-network": "2.2",
+      "fabric-protos": "^2.2.20",
+    "jest": "^30.2.0",
+    "rlp": "^3.0.0",
+    "ts-jest": "^29.4.4",
+    "typescript": "^5.5.3",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "typescript-eslint": "^8.20.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types/account": {
+      "import": "./dist/types/account.js",
+      "require": "./dist/types/account.js",
+      "types": "./dist/types/account.d.ts"
+    },
+    "./types/address": {
+      "import": "./dist/types/address.js",
+      "require": "./dist/types/address.js",
+      "types": "./dist/types/address.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli/index.js",
+      "require": "./dist/cli/index.js",
+      "types": "./dist/cli/index.d.ts"
+    },
+    "./service": {
+      "import": "./dist/service/index.js",
+      "require": "./dist/service/index.js",
+      "types": "./dist/service/index.d.ts"
+    }
+  },
+  "private": true
+}
