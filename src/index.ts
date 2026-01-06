@@ -10,6 +10,5 @@ export { BpnCliProvider } from "./bpn-cli-provider"
 
 export * from "./blockparser"
 export * from "./bpn-network"
-export * from "./chaincode-client/user-chaincodes"
-export * from "./chaincode-client/system-chaincodes"
+export * from "./chaincode-client"
 export * from "./cli"
