@@ -1,7 +1,7 @@
 /** @format */
-import { Chaincode } from "../../bpn-network"
+import { Chaincode } from "../../../bpn-network"
 import { Contract } from "fabric-network"
-import { BlockDecoder } from "../../blockparser/block-decoder"
+import { BlockDecoder } from "../../../blockparser"
 import * as fabprotos from "fabric-protos"
 import Long from "long"
 

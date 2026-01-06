@@ -1,20 +1,13 @@
 /** @format */
 
-import { BpnNetwork, Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Erc20Chaincode } from "./erc20-chaincode"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { bigIntParamToHex } from "../utils/utils"
-import { SigMsgGenerator } from "./generator/sig-msg-generator"
-import { SigMsg } from "./generator/sig-msg"
-import { EvmTransactionParam } from "./types/evm-transaction-param"
-import { EvmTxParamGenerator } from "./generator/evm-tx-param-generator"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
 
 export class DappChaincode {
   readonly chaincode: Chaincode
-	private readonly erc20ArgsCreator = new Erc20ArgsGenerator()
 
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string) {
 		const chaincode = await bpnNetwork.getChaincode(dAppChaincodeName)
@@ -124,8 +117,7 @@ export class DappChaincode {
 
 
 	async query(functionName: string, args: string[] = []): Promise<any> {
-		const response = await this.chaincode.query(functionName, args)
-		return response
+		return await this.chaincode.query(functionName, args)
 	}
 
 	async invoke(signer: Account, functionName: string, args: string[]): Promise<any> {

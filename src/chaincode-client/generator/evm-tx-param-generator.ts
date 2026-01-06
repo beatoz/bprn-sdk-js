@@ -1,7 +1,7 @@
 /** @format */
 
 import { Account } from "../../types/account"
-import { Erc20Chaincode } from "../erc20-chaincode"
+import { Erc20Chaincode } from "../user-chaincodes"
 import { EvmTransactionParam } from "../types/evm-transaction-param"
 
 export class EvmTxParamGenerator {

@@ -20,20 +20,7 @@ export { UserInfo } from "./info/user-info/user-info"
 export { UserInfoFactory } from "./info/user-info/user-info-factory"
 export { UserInfoRepository } from "./info/user-info/user-info-repository"
 
-// Connection Profile types and classes
-// export type {
-//   NetworkConfig,
-//   TLSCACerts,
-//   GrpcOptions,
-//   Peer,
-//   Orderer,
-//   ChannelPeer,
-//   Channel,
-//   CertificateAuthority,
-//   Organization,
-//   Client,
-//   ConnectionProfile,
-// } from './connection-profile/connection-profile';
+// Connection profile classes
 export { ConnectionProfileReader } from "./connection-profile/reader"
 export { ConnectionProfileValidator } from "./connection-profile/validator"
 

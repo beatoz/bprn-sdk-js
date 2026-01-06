@@ -1,11 +1,11 @@
 /** @format */
-import { BpnNetwork } from "../bpn-network"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { Account } from "../types/account"
-import { SigMsg } from "./generator/sig-msg"
+import { BpnNetwork } from "../../bpn-network"
+import { CliChaincodeInvoker } from "../../cli"
+import { Account } from "../../types/account"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
-import logger from "../logger"
+import logger from "../../logger"
 import { Contract } from "fabric-network"
 import { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
 

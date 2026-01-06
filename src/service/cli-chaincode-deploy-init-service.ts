@@ -1,7 +1,7 @@
 /** @format */
 
 import { CliChaincodeDeployService } from "./cli-chaincode-deploy-service"
-import { InvokeParam } from "../cli/chaincode/invoke"
+import { InvokeParam } from "../cli"
 import { CliChaincodeInvokeService } from "./cli-chaincode-invoke-service"
 import { PackagingMode } from "../cli"
 

@@ -1,10 +1,10 @@
 /** @format */
 
 import { BpnDirInfo, BpnFactory, BpnNetwork, NetworkInfo, PeerEnvs, UserInfoRepository } from "./bpn-network"
-import { PeerCli } from "./cli/peer-cli"
-import { CliChaincodeDeployer } from "./cli/cli-chaincode-deployer"
-import { CliChaincodeDeployService } from "./service/cli-chaincode-deploy-service"
-import { CliChaincodeInvoker } from "./cli/cli-chaincode-invoker"
+import { PeerCli } from "./cli"
+import { CliChaincodeDeployer } from "./cli"
+import { CliChaincodeDeployService } from "./service"
+import { CliChaincodeInvoker } from "./cli"
 
 export class BpnProvider {
 	readonly bpnConfigDirInfo: BpnDirInfo

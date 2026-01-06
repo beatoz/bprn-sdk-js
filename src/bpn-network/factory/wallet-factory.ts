@@ -1,7 +1,7 @@
 /** @format */
 
 import { Wallet, Wallets, Identity } from "fabric-network"
-import { Utils } from "../../utils/utils"
+import { Utils } from "../../utils"
 import { Client } from "../connection-profile/connection-profile"
 import { BpnDirInfo } from "../info/bpn-dir-info"
 
