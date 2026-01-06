@@ -1,7 +1,7 @@
 /** @format */
 
 import { ChaincodeInfo } from "./params"
-import { OrdererInfo, PeerInfo } from "../../../bpn-network/info/network-info/network-info"
+import { OrdererInfo, PeerInfo } from "../../../bpn-network"
 import { BaseLifecycleChaincode } from "./base"
 import { FlagBuilder } from "../flag/flag-builder"
 

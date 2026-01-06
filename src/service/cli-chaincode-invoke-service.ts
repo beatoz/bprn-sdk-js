@@ -1,10 +1,10 @@
 /** @format */
 
-import { UserInfo } from "../bpn-network/info/user-info/user-info"
-import { PeerCli } from "../cli/peer-cli"
+import { UserInfo } from "../bpn-network"
+import { PeerCli } from "../cli"
 import { Chaincode } from "../cli/chaincode"
-import { NetworkInfo } from "../bpn-network/info/network-info/network-info"
-import { PeerEnvs } from "../bpn-network/envs"
+import { NetworkInfo } from "../bpn-network"
+import { PeerEnvs } from "../bpn-network"
 
 export class CliChaincodeInvokeService {
 	private readonly peerCli: PeerCli

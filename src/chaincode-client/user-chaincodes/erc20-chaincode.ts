@@ -1,11 +1,11 @@
 /** @format */
 
-import { Chaincode } from "../bpn-network/chaincode"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Address } from "../types/address"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { bigIntParamToHex } from "../utils/utils"
+import { Chaincode } from "../../bpn-network"
+import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
+import { Address } from "../../types/address"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
+import { bigIntParamToHex } from "../../utils"
 
 export interface Erc20ChaincodeInfo {
 	chaincodeName: string

@@ -1,6 +1,6 @@
 /** @format */
 
-import { OrdererInfo, PeerInfo } from "../../../bpn-network/info/network-info/network-info"
+import { OrdererInfo, PeerInfo } from "../../../bpn-network"
 import { InvokeParam } from "../../chaincode/invoke"
 
 export class FlagBuilder {

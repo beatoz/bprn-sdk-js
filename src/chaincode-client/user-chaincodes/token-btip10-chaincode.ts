@@ -1,14 +1,11 @@
 /** @format */
-import { BpnNetwork, Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { Account } from "../types/account"
-import { SigMsg } from "./generator/sig-msg"
-import { EvmTxParamGenerator } from "./generator/evm-tx-param-generator"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { CliChaincodeInvoker } from "../../cli"
+import { Account } from "../../types/account"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
-import { bigIntParamToHex } from "../utils/utils"
 import { ContractEvent } from "fabric-network/lib/events"
-import logger from "../logger"
+import logger from "../../logger"
 
 
 export class TokenBtip10Chaincode {

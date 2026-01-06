@@ -8,7 +8,7 @@ import { Commit } from "./chaincode/commit"
 import { Install } from "./chaincode/install"
 import { CheckCommitReadiness } from "./chaincode/checkcommitreadiness"
 import { ChaincodeInfo } from "./chaincode/params"
-import { OrdererInfo } from "../../bpn-network/info/network-info/network-info"
+import { OrdererInfo } from "../../bpn-network"
 import { QueryCommitted } from "./chaincode/querycommitted"
 
 export class LifecycleChaincodeV2 {

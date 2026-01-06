@@ -1,6 +1,6 @@
 /** @format */
 
-import { CliChaincodeDeployer, PackagingMode } from "../cli/cli-chaincode-deployer"
+import { CliChaincodeDeployer, PackagingMode } from "../cli"
 import { UserInfo } from "../bpn-network"
 import { ChaincodeInfo } from "../cli/lifecycle/chaincode/params"
 

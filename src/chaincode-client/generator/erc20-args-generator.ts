@@ -1,10 +1,9 @@
 /** @format */
 
 import * as web3Account from "@beatoz/web3-accounts"
-import { Address } from "../../types/address"
 import { EvmTxParamGenerator } from "./evm-tx-param-generator"
 import { Account } from "../../types/account"
-import { Erc20Chaincode } from "../erc20-chaincode"
+import { Erc20Chaincode } from "../user-chaincodes"
 import { SigMsgGenerator } from "./sig-msg-generator"
 import { Erc20Args } from "../types/erc20-args"
 import { EvmTransactionParam } from "../types/evm-transaction-param"

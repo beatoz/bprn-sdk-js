@@ -1,6 +1,5 @@
 /** @format */
 
-import { EvmTransactionParam } from "../types/evm-transaction-param"
 import * as rlp from "rlp"
 
 export class SigMsg {

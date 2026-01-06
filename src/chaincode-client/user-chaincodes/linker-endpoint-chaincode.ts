@@ -1,22 +1,16 @@
 /** @format */
 
-import { BpnNetwork, Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Erc20Chaincode } from "./erc20-chaincode"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { bigIntParamToHex } from "../utils/utils"
-import { SigMsgGenerator } from "./generator/sig-msg-generator"
-import { SigMsg } from "./generator/sig-msg"
-import { EvmTransactionParam } from "./types/evm-transaction-param"
-import { EvmTxParamGenerator } from "./generator/evm-tx-param-generator"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
-import { ContractEvent, ContractListener } from "fabric-network/lib/events"
-import logger from "../logger"
+import { ContractEvent } from "fabric-network/lib/events"
+import logger from "../../logger"
 
 export class LinkerEndpointChaincode {
   readonly chaincode: Chaincode
-	private readonly erc20ArgsCreator = new Erc20ArgsGenerator()
 
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
 		const chaincode = await bpnNetwork.getChaincode(linkerEndpointChaincodeName)

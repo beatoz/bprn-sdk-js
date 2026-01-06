@@ -1,5 +1,5 @@
 /** @format */
-import { decodeFromBase64 } from "../utils/utils"
+import { decodeFromBase64 } from "../utils"
 
 export class PostMessageEvent {
 	constructor(
