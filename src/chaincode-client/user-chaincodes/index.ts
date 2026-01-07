@@ -9,7 +9,7 @@ export { LinkerEndpointChaincodeV2 } from "./linker-endpoint-chaincode-v2"
 export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
-
+export { VaultChaincodeV2 } from "./vault-chaincode-v2"
 
 // Types
 export { Erc20CoinInfo } from "../types/erc20-coin-info"
