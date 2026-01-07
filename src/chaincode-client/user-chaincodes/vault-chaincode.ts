@@ -1,6 +1,6 @@
 /** @format */
 
-import { Chaincode } from "../../bpn-network"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
 import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
 import { Account } from "../../types/account"
 import { Erc20Chaincode } from "./erc20-chaincode"
@@ -34,6 +34,11 @@ export class VaultChaincode {
 		this.chaincode = chaincode
 	}
 
+	static async create(bpnNetwork: BpnNetwork, vaultChaincodeName: string): Promise<VaultChaincode> {
+		const chaincode = await bpnNetwork.getChaincode(vaultChaincodeName)
+		return new VaultChaincode(chaincode)
+	}
+
 	chaincodeAddress(): string {
 		return this.chaincode.chaincodeAddress()
 	}
@@ -50,7 +55,7 @@ export class VaultChaincode {
 
 	async depositCollateral(wbtzCoinChaincode: Erc20Chaincode, issuerAccount: Account, depositAmount: string) {
 		const vaultChaincodeAddress = this.chaincodeAddress()
-		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(issuerAccount, wbtzCoinChaincode, "transfer", [
+		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(issuerAccount, wbtzCoinChaincode, "Transfer", [
 			vaultChaincodeAddress,
 			depositAmount,
 		])
@@ -85,7 +90,7 @@ export class VaultChaincode {
 		const vaultChaincodeAddress = this.chaincode.chaincodeAddress()
 		console.log("vaultChaincodeAddress", vaultChaincodeAddress)
 
-		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(btzCoinSigner, wbtzCoinChaincode, "transfer", [
+		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(btzCoinSigner, wbtzCoinChaincode, "Transfer", [
 			vaultChaincodeAddress,
 			mintAmount,
 		])
