@@ -27,6 +27,11 @@ export class CliChaincodeDeployService {
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
 	}
 
+	upgrade2(chaincodeSourceDir: string, channelName: string, chaincodeName: string, version: number, sequence: number, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
+		const chaincodeInfo = this.getChaincodeInfo(chaincodeSourceDir, channelName, chaincodeName, initRequired, version, sequence)
+		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
+	}
+
 	deploy(channelName: string, chaincodeName: string, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
 		const chaincodeInfo = this.getChaincodeInfo(this.chaincodeSourceDir, channelName, chaincodeName, initRequired)
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)

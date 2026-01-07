@@ -80,7 +80,8 @@ export class VaultChaincodeV2 extends Chaincode {
 	}
 
 	async getCollateralInfo(address: string) {
-		const collateralInfoResult = await this.query("GetCollateralInfo", [address])
+		const result = await this.query("GetCollateralInfo", [address])
+		const collateralInfoResult = JSON.parse(result.toString())
 		return new CollateralInfo(BigInt(collateralInfoResult.totalCollateral.value), BigInt(collateralInfoResult.usedCollateral.value))
 	}
 
