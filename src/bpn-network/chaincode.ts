@@ -31,8 +31,9 @@ export class Chaincode {
 		return this.contract.chaincodeId
 	}
 
-	public chaincodeAddress() {
-		return generateChaincodeAddress(this.channelName, this.chaincodeName())
+	public chaincodeAddress(prefix0x: boolean = false): string {
+		const chaincodeAddr = generateChaincodeAddress(this.channelName, this.chaincodeName())
+		return prefix0x ? `0x${chaincodeAddr}` : chaincodeAddr
 	}
 
 	public async queryRaw(functionName: string, args: string[] = []): Promise<any> {
