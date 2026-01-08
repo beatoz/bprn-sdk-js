@@ -52,8 +52,8 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 		console.log("SetLinkerEndpoint response payload: ", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier
 		}
 	}
 
@@ -77,8 +77,8 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 		console.log("PostMessage response payload: ", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier
 		}
 	}
 

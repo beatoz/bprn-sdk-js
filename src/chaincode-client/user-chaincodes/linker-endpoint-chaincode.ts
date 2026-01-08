@@ -54,8 +54,8 @@ export class LinkerEndpointChaincode {
 		console.log("registerDApp response payload", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier
 		}
 	}
 
