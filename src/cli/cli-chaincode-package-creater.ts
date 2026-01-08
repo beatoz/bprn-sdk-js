@@ -21,7 +21,7 @@ export class CliChaincodePackageCreater extends Cli {
 
 	createMetadata(packageDirPath: string, chaincodeName: string) {
 		const metadata = {
-			path: "github.com/beatoz/adc-caliper/benchmarks/src/erc20",
+			path: "github.com/beatoz/linker-chaincodes/btip10",
 			type: "golang",
 			label: `${chaincodeName}_1`,
 		}
