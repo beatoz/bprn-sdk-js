@@ -45,13 +45,7 @@ export class Erc20ChaincodeV2 extends Chaincode {
 		const chaincodeArgs = ["", name, symbol, decimal, initAmount]
 		chaincodeArgs[0] = super.generateSignature(ownerAccount, chaincodeFunctionName, chaincodeArgs)
 
-		cliInvoker.invoke(
-			this.channelName,
-			this.chaincodeName(),
-			chaincodeFunctionName,
-			chaincodeArgs,
-			true
-		)
+		cliInvoker.invoke(this.channelName, this.chaincodeName(), chaincodeFunctionName, chaincodeArgs, true)
 	}
 
 	constructor(channelName: string, contract: Contract) {

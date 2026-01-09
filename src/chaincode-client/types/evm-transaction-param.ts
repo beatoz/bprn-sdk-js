@@ -10,11 +10,11 @@ export class EvmTransactionParam {
 	// gasPrice2: bigint
 
 	constructor(
-		readonly version : number,
-		readonly nonce : number,
-		readonly gas : number,
-		readonly gasPrice : bigint,
-		readonly args?: string[],
+		readonly version: number,
+		readonly nonce: number,
+		readonly gas: number,
+		readonly gasPrice: bigint,
+		readonly args?: string[]
 	) {}
 
 	toArray() {
@@ -29,8 +29,7 @@ export class EvmTransactionParam {
 		]
 	}
 
-	serialize() : Uint8Array {
+	serialize(): Uint8Array {
 		return rlp.encode(this.toArray())
 	}
-
 }

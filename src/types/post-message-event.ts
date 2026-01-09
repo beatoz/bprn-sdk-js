@@ -11,12 +11,11 @@ export class PostMessageEvent {
 		public dstAccount: string,
 		public midx: string,
 		public message: string
-	) {
-	}
+	) {}
 
 	static fromJson(jsonStr: string): PostMessageEvent {
-		const parsed = JSON.parse(jsonStr);
-		const messageDecoded = decodeFromBase64(parsed.message);
+		const parsed = JSON.parse(jsonStr)
+		const messageDecoded = decodeFromBase64(parsed.message)
 
 		return new PostMessageEvent(
 			parsed.srcChainId,
@@ -26,7 +25,7 @@ export class PostMessageEvent {
 			parsed.dstDAppAddr,
 			parsed.dstAccount,
 			parsed.midx,
-			messageDecoded.toString('hex')
-		);
+			messageDecoded.toString("hex")
+		)
 	}
 }

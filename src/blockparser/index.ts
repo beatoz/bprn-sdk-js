@@ -16,17 +16,11 @@ export {
 	ChaincodeData,
 	TransactionHeader,
 	ChannelHeader,
-	SignatureHeader
+	SignatureHeader,
 } from "./types/transaction"
 
 // Chaincode types
-export {
-	ChaincodeArgs,
-	NsRwSet,
-	Version,
-	ReadSet,
-	WriteSet
-} from "./types/chaincode"
+export { ChaincodeArgs, NsRwSet, Version, ReadSet, WriteSet } from "./types/chaincode"
 
 // Decoded block types
 export type {
@@ -48,12 +42,7 @@ export type {
 	DecodedPayload,
 	DecodedEnvelope,
 	DecodedBlockData,
-	DecodedBlock
+	DecodedBlock,
 } from "./types/decoded-block"
 
-export {
-	isDecodedTransaction,
-	isConfigEnvelope,
-	getTransactionType
-} from "./types/decoded-block"
-
+export { isDecodedTransaction, isConfigEnvelope, getTransactionType } from "./types/decoded-block"

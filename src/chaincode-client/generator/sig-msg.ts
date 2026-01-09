@@ -6,10 +6,10 @@ export class SigMsg {
 	constructor(
 		readonly chaincodeName: string,
 		readonly chaincodeMethodName: string,
-		readonly chaincodeParams: string[],
-	) { }
+		readonly chaincodeParams: string[]
+	) {}
 
-	toArray() : Array<number | Buffer> {
+	toArray(): Array<number | Buffer> {
 		const sigMsgArray: Array<number | Buffer> = []
 
 		sigMsgArray.push(Buffer.from(this.chaincodeName, "utf-8"))

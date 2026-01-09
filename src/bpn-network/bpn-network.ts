@@ -39,9 +39,9 @@ export class BpnNetwork {
 	async addBlockListener(blockEventListener: BlockListener, startBlockNum: number) {
 		const options: ListenerOptions = {
 			startBlock: startBlockNum,
-		};
+		}
 
-		return await this.network.addBlockListener(blockEventListener);
+		return await this.network.addBlockListener(blockEventListener)
 	}
 
 	removeBlockListener(blockEventListener: BlockListener) {

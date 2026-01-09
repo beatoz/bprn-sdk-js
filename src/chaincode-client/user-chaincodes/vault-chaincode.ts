@@ -44,13 +44,7 @@ export class VaultChaincode {
 	}
 
 	init(cliInvoker: CliChaincodeInvoker) {
-		cliInvoker.invoke(
-			this.chaincode.channelName,
-			this.chaincode.chaincodeName(),
-			"InitLedger",
-			["", "", ""],
-			true
-		)
+		cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), "InitLedger", ["", "", ""], true)
 	}
 
 	async depositCollateral(wbtzCoinChaincode: Erc20Chaincode, issuerAccount: Account, depositAmount: string) {
@@ -60,24 +54,13 @@ export class VaultChaincode {
 			depositAmount,
 		])
 
-		const depositPayload = await this.chaincode.submit("DepositCollateral", [
-			wbtzCoinChaincode.chaincodeName(),
-			btzCoinTransferArgs.toJson(),
-		])
+		const depositPayload = await this.chaincode.submit("DepositCollateral", [wbtzCoinChaincode.chaincodeName(), btzCoinTransferArgs.toJson()])
 
 		return depositPayload.payload
 	}
 
-	async mintStableCoin(
-		stableCoinChaincodeName: string,
-		toAddress: string,
-		mintAmount: string
-	) {
-		return await this.chaincode.submit("MintStableCoin", [
-			stableCoinChaincodeName,
-			toAddress,
-			mintAmount
-		])
+	async mintStableCoin(stableCoinChaincodeName: string, toAddress: string, mintAmount: string) {
+		return await this.chaincode.submit("MintStableCoin", [stableCoinChaincodeName, toAddress, mintAmount])
 	}
 
 	async depositAndMintStableCoin(
