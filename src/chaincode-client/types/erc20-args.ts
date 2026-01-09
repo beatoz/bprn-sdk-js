@@ -18,7 +18,14 @@ export class Erc20Args {
 	}
 
 	toStringArray() {
-		return [this.rlpParam.version.toString(), this.rlpParam.nonce.toString(), this.rlpParam.gas.toString(), this.rlpParam.gasPrice.toString(), ...this.args, this.signature]
+		return [
+			this.rlpParam.version.toString(),
+			this.rlpParam.nonce.toString(),
+			this.rlpParam.gas.toString(),
+			this.rlpParam.gasPrice.toString(),
+			...this.args,
+			this.signature,
+		]
 	}
 
 	toJson() {

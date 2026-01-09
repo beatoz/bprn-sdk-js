@@ -1,10 +1,10 @@
 /** @format */
 
-import { Chaincode } from "../bpn-network/chaincode"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Account } from "../types/account"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
+import { Account } from "../../types/account"
 import { Erc20Chaincode } from "./erc20-chaincode"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
+import { CliChaincodeInvoker } from "../../cli"
 
 export class CollateralInfo {
 	readonly totalCollateral: bigint
@@ -34,45 +34,33 @@ export class VaultChaincode {
 		this.chaincode = chaincode
 	}
 
+	static async create(bpnNetwork: BpnNetwork, vaultChaincodeName: string): Promise<VaultChaincode> {
+		const chaincode = await bpnNetwork.getChaincode(vaultChaincodeName)
+		return new VaultChaincode(chaincode)
+	}
+
 	chaincodeAddress(): string {
 		return this.chaincode.chaincodeAddress()
 	}
 
 	init(cliInvoker: CliChaincodeInvoker) {
-		cliInvoker.invoke(
-			this.chaincode.channelName,
-			this.chaincode.chaincodeName(),
-			"InitLedger",
-			["", "", ""],
-			true
-		)
+		cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), "InitLedger", ["", "", ""], true)
 	}
 
 	async depositCollateral(wbtzCoinChaincode: Erc20Chaincode, issuerAccount: Account, depositAmount: string) {
 		const vaultChaincodeAddress = this.chaincodeAddress()
-		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(issuerAccount, wbtzCoinChaincode, "transfer", [
+		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(issuerAccount, wbtzCoinChaincode, "Transfer", [
 			vaultChaincodeAddress,
 			depositAmount,
 		])
 
-		const depositPayload = await this.chaincode.submit("DepositCollateral", [
-			wbtzCoinChaincode.chaincodeName(),
-			btzCoinTransferArgs.toJson(),
-		])
+		const depositPayload = await this.chaincode.submit("DepositCollateral", [wbtzCoinChaincode.chaincodeName(), btzCoinTransferArgs.toJson()])
 
 		return depositPayload.payload
 	}
 
-	async mintStableCoin(
-		stableCoinChaincodeName: string,
-		toAddress: string,
-		mintAmount: string
-	) {
-		return await this.chaincode.submit("MintStableCoin", [
-			stableCoinChaincodeName,
-			toAddress,
-			mintAmount
-		])
+	async mintStableCoin(stableCoinChaincodeName: string, toAddress: string, mintAmount: string) {
+		return await this.chaincode.submit("MintStableCoin", [stableCoinChaincodeName, toAddress, mintAmount])
 	}
 
 	async depositAndMintStableCoin(
@@ -85,7 +73,7 @@ export class VaultChaincode {
 		const vaultChaincodeAddress = this.chaincode.chaincodeAddress()
 		console.log("vaultChaincodeAddress", vaultChaincodeAddress)
 
-		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(btzCoinSigner, wbtzCoinChaincode, "transfer", [
+		const btzCoinTransferArgs = await this.erc20ArgsCreator.createArgs(btzCoinSigner, wbtzCoinChaincode, "Transfer", [
 			vaultChaincodeAddress,
 			mintAmount,
 		])
@@ -104,10 +92,7 @@ export class VaultChaincode {
 
 	async getCollateralInfo(address: string) {
 		const collateralInfoResult = await this.chaincode.query("GetCollateralInfo", [address])
-
-		const collateralInfo = new CollateralInfo(BigInt(collateralInfoResult.totalCollateral.value), BigInt(collateralInfoResult.usedCollateral.value))
-
-		return collateralInfo
+		return new CollateralInfo(BigInt(collateralInfoResult.totalCollateral.value), BigInt(collateralInfoResult.usedCollateral.value))
 	}
 
 	async colletaralAmount(address: string) {

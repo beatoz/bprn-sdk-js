@@ -1,29 +1,22 @@
 /** @format */
 
-import { BpnNetwork, Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Erc20Chaincode } from "./erc20-chaincode"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { bigIntParamToHex } from "../utils/utils"
-import { SigMsgGenerator } from "./generator/sig-msg-generator"
-import { SigMsg } from "./generator/sig-msg"
-import { EvmTransactionParam } from "./types/evm-transaction-param"
-import { EvmTxParamGenerator } from "./generator/evm-tx-param-generator"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
 
 export class DappChaincode {
-  readonly chaincode: Chaincode
-	private readonly erc20ArgsCreator = new Erc20ArgsGenerator()
+	readonly chaincode: Chaincode
 
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string) {
 		const chaincode = await bpnNetwork.getChaincode(dAppChaincodeName)
 		return new DappChaincode(chaincode)
 	}
 
-  constructor(chaincode: Chaincode) {
-	  this.chaincode = chaincode
-  }
+	constructor(chaincode: Chaincode) {
+		this.chaincode = chaincode
+	}
 
 	chaincodeName() {
 		return this.chaincode.chaincodeName()
@@ -35,21 +28,11 @@ export class DappChaincode {
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
 		const methodName = "InitLedger"
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			methodName,
-			[]
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), methodName, []).serialize()
 
 		const signature = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
-		return cliInvoker.invoke(
-			this.chaincode.channelName,
-			this.chaincode.chaincodeName(),
-			methodName,
-			[signature, "", "", "", ""],
-			true
-		)
+		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, [signature, "", "", "", ""], true)
 	}
 
 	async setLinkerEndpoint(fromAccount: Account, linkerEndpointChaincodeName: string) {
@@ -57,18 +40,18 @@ export class DappChaincode {
 		console.log("SetLinkerEndpoint response payload: ", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message : string) {
+	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
 		const payload = await this.invoke(fromAccount, "PostMessage", [toChainId, toDAppAddr, toAccount, message])
 		console.log("PostMessage response payload: ", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
@@ -87,11 +70,7 @@ export class DappChaincode {
 	}
 
 	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			"GetOutboundMidx",
-			[toChainId, toDAppAddr, to],
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetOutboundMidx", [toChainId, toDAppAddr, to]).serialize()
 		const signature = web3Account.sign(sigMsg, fromAccount.privateKey).toHex()
 
 		const response = await this.query("GetOutboundMidx", [signature, toChainId, toDAppAddr, to])
@@ -101,11 +80,7 @@ export class DappChaincode {
 	}
 
 	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			"GetInboundMidx",
-			[fromChainId, fromDAppAddr, from],
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetInboundMidx", [fromChainId, fromDAppAddr, from]).serialize()
 		const signature = web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
 
 		const response = await this.query("GetInboundMidx", [signature, fromChainId, fromDAppAddr, from])
@@ -121,26 +96,17 @@ export class DappChaincode {
 		return response
 	}
 
-
-
 	async query(functionName: string, args: string[] = []): Promise<any> {
-		const response = await this.chaincode.query(functionName, args)
-		return response
+		return await this.chaincode.query(functionName, args)
 	}
 
 	async invoke(signer: Account, functionName: string, args: string[]): Promise<any> {
 		//const erc20Args = await this.erc20ArgsCreator.createArgs(signer, this.chaincode, functionName, args)
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			functionName,
-			args,
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), functionName, args).serialize()
 		const signature = web3Account.sign(sigMsg, signer.privateKey).toHex()
 
 		const response = await this.chaincode.submit(functionName, [signature, ...args])
 		return response.payload
 		//return result.payload.tx.payload.details
 	}
-
-
 }

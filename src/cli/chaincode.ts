@@ -1,7 +1,7 @@
 /** @format */
 
 import { Invoke, InvokeParam } from "./chaincode/invoke"
-import { OrdererInfo, PeerInfo } from "../bpn-network/info/network-info/network-info"
+import { OrdererInfo, PeerInfo } from "../bpn-network"
 
 export class Chaincode {
 	command() {

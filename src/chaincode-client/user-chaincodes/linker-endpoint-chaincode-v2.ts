@@ -1,69 +1,81 @@
 /** @format */
 
-import { BpnNetwork, Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Erc20Chaincode } from "./erc20-chaincode"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
-import { bigIntParamToHex } from "../utils/utils"
-import { SigMsgGenerator } from "./generator/sig-msg-generator"
-import { SigMsg } from "./generator/sig-msg"
-import { EvmTransactionParam } from "./types/evm-transaction-param"
-import { EvmTxParamGenerator } from "./generator/evm-tx-param-generator"
+import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
+import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
-import { ContractEvent, ContractListener } from "fabric-network/lib/events"
-import logger from "../logger"
-import {Contract} from "fabric-network";
+import { ContractEvent } from "fabric-network/lib/events"
+import logger from "../../logger"
+import { Contract } from "fabric-network"
 
 export class LinkerEndpointChaincodeV2 extends Chaincode {
-	private readonly erc20ArgsCreator = new Erc20ArgsGenerator()
-
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
-      const contract = await bpnNetwork.getContract(linkerEndpointChaincodeName)
-      const channelName = bpnNetwork.getChannelName()
-      return new LinkerEndpointChaincodeV2(channelName, contract)
+		const contract = await bpnNetwork.getContract(linkerEndpointChaincodeName)
+		const channelName = bpnNetwork.getChannelName()
+		return new LinkerEndpointChaincodeV2(channelName, contract)
 	}
 
-    constructor(channelName: string, contract: Contract) {
-      super(channelName, contract)
-    }
+	constructor(channelName: string, contract: Contract) {
+		super(channelName, contract)
+	}
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
 		const methodName = "InitLedger"
 		const args = [""]
-		const sigMsg = new SigMsg(
-			this.chaincodeName(),
-			methodName,
-			args
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
 
 		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
-		return cliInvoker.invoke(
-			this.channelName,
-			this.chaincodeName(),
-			methodName,
-			args,
-			true
-		)
+		return cliInvoker.invoke(this.channelName, this.chaincodeName(), methodName, args, true)
 	}
 
 	async registerDApp(fromAccount: Account, dAppOwner: string) {
-		const payload = await this.invoke( "RegisterDApp", [dAppOwner])
+		const payload = await this.invoke("RegisterDApp", [dAppOwner])
 		console.log("registerDApp response payload", payload)
 
 		return {
-			linkerChannelIdentity: payload.linkerChannelIdentity,
-			linkerVerifierIdentity: payload.linkerVerifierIdentity
+			linkerChannelIdentity: payload.linkerChannelIdentifier,
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
-	async onMessage(signer: Account, fromChainId: string, fromDAppAddr: string, from: string, toChainId: string, toDAppChaincodeName: string, to: string, midx: string, message: string) {
-		const payload = await this.invokeWithSig(signer, "OnMessage", ["", fromChainId, fromDAppAddr, from, toChainId, toDAppChaincodeName, to, midx, message])
+	async onMessage(
+		signer: Account,
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		toChainId: string,
+		toDAppChaincodeName: string,
+		to: string,
+		midx: string,
+		message: string
+	) {
+		const payload = await this.invokeWithSig(signer, "OnMessage", [
+			"",
+			fromChainId,
+			fromDAppAddr,
+			from,
+			toChainId,
+			toDAppChaincodeName,
+			to,
+			midx,
+			message,
+		])
 		console.log("OnMessage response payload", payload)
 	}
 
-	async onResponse(fromChainId: string, fromDAppAddr: string, from: string, toChainId: string, toDAppChaincodeName: string, to: string, midx: string, result: string) {
+	async onResponse(
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		toChainId: string,
+		toDAppChaincodeName: string,
+		to: string,
+		midx: string,
+		result: string
+	) {
 		const payload = await this.submit("OnResponse", [fromChainId, fromDAppAddr, from, toChainId, toDAppChaincodeName, to, midx, result])
 		console.log("OnResponse response payload", payload)
 	}
@@ -82,27 +94,41 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 		return dAppChannelCount
 	}
 
-	async inboundMidxs(dAppAddress: string, linkerChannelIdentity: string, fromChainId: string, fromDAppAddress: string, toAccount: string, fromAccount: string) {
+	async inboundMidxs(
+		dAppAddress: string,
+		linkerChannelIdentity: string,
+		fromChainId: string,
+		fromDAppAddress: string,
+		toAccount: string,
+		fromAccount: string
+	) {
 		const inboundMidx = await this.query("InboundMidxs", [dAppAddress, linkerChannelIdentity, fromChainId, fromDAppAddress, toAccount, fromAccount])
 		return inboundMidx
 	}
 
-	async outboundMidxs(dAppAddress: string, linkerChannelIdentity: string, toChainId: string, toDAppAddress: string, fromAccount: string, toAccount: string) {
+	async outboundMidxs(
+		dAppAddress: string,
+		linkerChannelIdentity: string,
+		toChainId: string,
+		toDAppAddress: string,
+		fromAccount: string,
+		toAccount: string
+	) {
 		const outboundMidx = await this.query("OutboundMidxs", [dAppAddress, linkerChannelIdentity, toChainId, toDAppAddress, fromAccount, toAccount])
 		return outboundMidx
 	}
 
-    async linkerChannels(dAppAddress: string) {
-      return await this.query("LinkerChannels", [dAppAddress])
-    }
+	async linkerChannels(dAppAddress: string) {
+		return await this.query("LinkerChannels", [dAppAddress])
+	}
 
-    async linkerVerifiers(dAppAddress: string) {
-      return await this.query("LinkerVerifiers", [dAppAddress])
-    }
+	async linkerVerifiers(dAppAddress: string) {
+		return await this.query("LinkerVerifiers", [dAppAddress])
+	}
 
-    async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
-      return await this.invoke( "CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
-    }
+	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
+		return await this.invoke("CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
+	}
 
 	async addEventListeners() {
 		await this.contract.addContractListener(this.chaincodeEventListener)
@@ -111,23 +137,23 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 	public chaincodeEventListener = async (contractEvent: ContractEvent) => {
 		try {
 			console.log("endpoint event: ", contractEvent)
-			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`);
+			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`)
 			console.log(contractEvent)
 		} catch (err) {
-			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`);
+			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`)
 		}
-	};
+	}
 
 	// async query(functionName: string, args: string[] = []): Promise<any> {
 	// 	// const lowerArgs: string[] = []
 	// 	// for (let i = 0; i < args.length; i++) {
 	// 	// 	lowerArgs.push(String(args[i]).toLowerCase())
 	// 	// }
-    //
+	//
 	// 	const result = await this.query(functionName, args)
 	// 	return result.query
 	// }
-    //
+	//
 	// async invoke(functionName: string, args: string[]): Promise<any> {
 	// 	//const erc20Args = await this.erc20ArgsCreator.createArgs(signer, this.chaincode, functionName, args)
 	// 	// const sigMsg = new SigMsg(
@@ -137,16 +163,15 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 	// 	// 	args,
 	// 	// ).serializeRlp()
 	// 	// const signature = web3Account.sign(sigMsg, signer.privateKey).toHex()
-    //
+	//
 	// 	// 소문자로 변환
 	// 	// const lowerArgs: string[] = []
 	// 	// for (let i = 0; i < args.length; i++) {
 	// 	// 	lowerArgs.push(String(args[i]).toLowerCase())
 	// 	// }
-    //
+	//
 	// 	const response = await this.submit(functionName, args)
 	// 	return response.payload
 	// 	//return result.payload.tx.payload.details
 	// }
-
 }

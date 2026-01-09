@@ -1,12 +1,12 @@
 /** @format */
 
-import { Chaincode } from "../bpn-network"
-import { Erc20ArgsGenerator } from "./generator/erc20-args-generator"
-import { Address } from "../types/address"
-import { Account } from "../types/account"
-import { CliChaincodeInvoker } from "../cli/cli-chaincode-invoker"
+import { Chaincode } from "../../bpn-network"
+import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
+import { Address } from "../../types/address"
+import { Account } from "../../types/account"
+import { CliChaincodeInvoker } from "../../cli"
 import { Contract } from "fabric-network"
-import { BpnNetwork } from "../bpn-network"
+import { BpnNetwork } from "../../bpn-network"
 
 export interface Erc20ChaincodeInfo {
 	chaincodeName: string
@@ -22,7 +22,6 @@ export interface Erc20BasicInfo {
 }
 
 export class Erc20ChaincodeV2 extends Chaincode {
-	private readonly erc20ArgsCreator = new Erc20ArgsGenerator()
 	erc20ChaincodeInfo!: Erc20ChaincodeInfo
 
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string) {
@@ -46,13 +45,7 @@ export class Erc20ChaincodeV2 extends Chaincode {
 		const chaincodeArgs = ["", name, symbol, decimal, initAmount]
 		chaincodeArgs[0] = super.generateSignature(ownerAccount, chaincodeFunctionName, chaincodeArgs)
 
-		cliInvoker.invoke(
-			this.channelName,
-			this.chaincodeName(),
-			chaincodeFunctionName,
-			chaincodeArgs,
-			true
-		)
+		cliInvoker.invoke(this.channelName, this.chaincodeName(), chaincodeFunctionName, chaincodeArgs, true)
 	}
 
 	constructor(channelName: string, contract: Contract) {

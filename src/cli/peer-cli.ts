@@ -2,7 +2,7 @@
 
 import { execSync } from "child_process"
 import { logger } from "../logger"
-import { PeerEnvs } from "../bpn-network/envs"
+import { PeerEnvs } from "../bpn-network"
 
 export class Cli {
 	execute(command: string, envs?: NodeJS.ProcessEnv): string {

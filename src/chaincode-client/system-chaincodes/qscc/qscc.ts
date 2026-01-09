@@ -1,7 +1,7 @@
 /** @format */
-import { Chaincode } from "../../bpn-network"
+import { Chaincode } from "../../../bpn-network"
 import { Contract } from "fabric-network"
-import { BlockDecoder } from "../../blockparser/block-decoder"
+import { BlockDecoder } from "../../../blockparser"
 import * as fabprotos from "fabric-protos"
 import Long from "long"
 
@@ -14,7 +14,6 @@ export class BlockchainInfo {
 }
 
 export class Qscc extends Chaincode {
-
 	constructor(channelName: string, qsccContract: Contract) {
 		super(channelName, qsccContract)
 	}
@@ -26,12 +25,12 @@ export class Qscc extends Chaincode {
 
 	async getChainInfo(): Promise<BlockchainInfo> {
 		const response = await this.queryRaw("GetChainInfo", [this.channelName])
-		const blockchainInfo = fabprotos.common.BlockchainInfo.decode(response);
+		const blockchainInfo = fabprotos.common.BlockchainInfo.decode(response)
 
 		return new BlockchainInfo(
 			blockchainInfo.height as Long,
-			Buffer.from(blockchainInfo.currentBlockHash).toString('hex'),
-			Buffer.from(blockchainInfo.previousBlockHash).toString('hex')
+			Buffer.from(blockchainInfo.currentBlockHash).toString("hex"),
+			Buffer.from(blockchainInfo.previousBlockHash).toString("hex")
 		)
 	}
 

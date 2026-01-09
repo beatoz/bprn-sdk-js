@@ -15,7 +15,7 @@ export class Chaincode {
 	static async create2<T extends Chaincode>(
 		bpnNetwork: BpnNetwork,
 		dAppChaincodeName: string,
-		ChaincodeClass: new (channelName: string, contract: Contract) => T,
+		ChaincodeClass: new (channelName: string, contract: Contract) => T
 	): Promise<T> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
@@ -31,8 +31,9 @@ export class Chaincode {
 		return this.contract.chaincodeId
 	}
 
-	public chaincodeAddress() {
-		return generateChaincodeAddress(this.channelName, this.chaincodeName())
+	public chaincodeAddress(prefix0x: boolean = false): string {
+		const chaincodeAddr = generateChaincodeAddress(this.channelName, this.chaincodeName())
+		return prefix0x ? `0x${chaincodeAddr}` : chaincodeAddr
 	}
 
 	public async queryRaw(functionName: string, args: string[] = []): Promise<any> {
@@ -106,11 +107,7 @@ export class Chaincode {
 	}
 
 	protected generateSignature(signerAccount: Account, functionName: string, args: string[] = []) {
-		const sigMsg = new SigMsg(
-			this.chaincodeName(),
-			functionName,
-			args,
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincodeName(), functionName, args).serialize()
 
 		// for (let i = 0; i < args.length; i++) {
 		// 	console.log("args[i]: ", args[i])

@@ -1,7 +1,7 @@
 /** @format */
 
 import { PeerCli } from "./peer-cli"
-import { NetworkInfo } from "../bpn-network/info/network-info/network-info"
+import { NetworkInfo } from "../bpn-network"
 import { InvokeParam } from "./chaincode/invoke"
 import { Chaincode } from "./chaincode"
 

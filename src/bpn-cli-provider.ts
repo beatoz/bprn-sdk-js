@@ -1,13 +1,13 @@
 /** @format */
 
 import { PeerEnvs } from "./bpn-network"
-import { PeerCli } from "./cli/peer-cli"
-import { CliChaincodeDeployer } from "./cli/cli-chaincode-deployer"
-import { CliChaincodeDeployService } from "./service/cli-chaincode-deploy-service"
-import { CliChaincodeInvoker } from "./cli/cli-chaincode-invoker"
+import { PeerCli } from "./cli"
+import { CliChaincodeDeployer } from "./cli"
+import { CliChaincodeDeployService } from "./service"
+import { CliChaincodeInvoker } from "./cli"
 import { BpnProvider } from "./bpn-provider"
-import { CliChaincodeDeployInitService } from "./service/cli-chaincode-deploy-init-service"
-import { CliChaincodeInvokeService } from "./service/cli-chaincode-invoke-service"
+import { CliChaincodeDeployInitService } from "./service"
+import { CliChaincodeInvokeService } from "./service"
 
 export class BpnCliProvider {
 	readonly bpnProvider: BpnProvider
@@ -42,11 +42,7 @@ export class BpnCliProvider {
 		const userInfo = this.bpnProvider.userInfoRepository.getUsersByOrganization(orgName)
 		if (userInfo.length === 0) throw new Error("no user found")
 
-		return new CliChaincodeInvokeService(
-			this.peerCli,
-			this.bpnProvider.networkInfo,
-			userInfo[0]
-		)
+		return new CliChaincodeInvokeService(this.peerCli, this.bpnProvider.networkInfo, userInfo[0])
 	}
 
 	cliChaincodeDeployAndInitService(stableCoinChaincodeSourceDir: string, orgName: string): CliChaincodeDeployInitService {
@@ -56,7 +52,7 @@ export class BpnCliProvider {
 		)
 	}
 
-	static async createCliProvider(bpnProvider: BpnProvider) : Promise<BpnCliProvider> {
+	static async createCliProvider(bpnProvider: BpnProvider): Promise<BpnCliProvider> {
 		const peerCliEnv: PeerEnvs = {
 			FABRIC_CFG_PATH: bpnProvider.bpnConfigDirInfo.configDir(),
 			PATH: "/usr/local/go/bin:/usr/local/bin",
@@ -64,6 +60,5 @@ export class BpnCliProvider {
 		const peerCli = new PeerCli(bpnProvider.bpnConfigDirInfo.binDir(), peerCliEnv)
 
 		return new BpnCliProvider(bpnProvider, peerCli)
-
 	}
 }
