@@ -14,7 +14,7 @@ export class CliChaincodeDeployInitService {
 		this.cliChaincodeInit = cliChaincodeInit
 	}
 
-	deployAndInit(channelName: string, chaincodeName: string, invokeParam: InvokeParam, packagingMode= PackagingMode.PeerCli) {
+	deployAndInit(channelName: string, chaincodeName: string, invokeParam: InvokeParam, packagingMode = PackagingMode.PeerCli) {
 		this.cliChaincodeDeployService.deploy(channelName, chaincodeName, true, packagingMode)
 		return this.cliChaincodeInit.invoke(channelName, chaincodeName, invokeParam.functionName, invokeParam.args, true)
 	}

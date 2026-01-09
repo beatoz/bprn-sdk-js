@@ -22,12 +22,27 @@ export class CliChaincodeDeployService {
 		this.deployerInfo = deployerInfo
 	}
 
-	upgrade(channelName: string, chaincodeName: string, version: number, sequence: number, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
+	upgrade(
+		channelName: string,
+		chaincodeName: string,
+		version: number,
+		sequence: number,
+		initRequired: boolean = false,
+		packagingMode = PackagingMode.PeerCli
+	) {
 		const chaincodeInfo = this.getChaincodeInfo(this.chaincodeSourceDir, channelName, chaincodeName, initRequired, version, sequence)
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
 	}
 
-	upgrade2(chaincodeSourceDir: string, channelName: string, chaincodeName: string, version: number, sequence: number, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
+	upgrade2(
+		chaincodeSourceDir: string,
+		channelName: string,
+		chaincodeName: string,
+		version: number,
+		sequence: number,
+		initRequired: boolean = false,
+		packagingMode = PackagingMode.PeerCli
+	) {
 		const chaincodeInfo = this.getChaincodeInfo(chaincodeSourceDir, channelName, chaincodeName, initRequired, version, sequence)
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
 	}
@@ -37,12 +52,35 @@ export class CliChaincodeDeployService {
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
 	}
 
-	deploy2(chaincodeSourceDir: string, channelName: string, chaincodeName: string, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
+	deploy2(
+		chaincodeSourceDir: string,
+		channelName: string,
+		chaincodeName: string,
+		initRequired: boolean = false,
+		packagingMode = PackagingMode.PeerCli
+	) {
 		const chaincodeInfo = this.getChaincodeInfo(chaincodeSourceDir, channelName, chaincodeName, initRequired)
 		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
 	}
 
-	getChaincodeInfo(chaincodeSourceDir: string, channelName: string, chaincodeName: string, initRequired: boolean, version: number = 1, sequence: number = 1) {
-		return new ChaincodeInfo(channelName, chaincodeName, version, sequence, chaincodeSourceDir, this.chaincodePackageDir, "", this.chaincodeLang, initRequired)
+	getChaincodeInfo(
+		chaincodeSourceDir: string,
+		channelName: string,
+		chaincodeName: string,
+		initRequired: boolean,
+		version: number = 1,
+		sequence: number = 1
+	) {
+		return new ChaincodeInfo(
+			channelName,
+			chaincodeName,
+			version,
+			sequence,
+			chaincodeSourceDir,
+			this.chaincodePackageDir,
+			"",
+			this.chaincodeLang,
+			initRequired
+		)
 	}
 }

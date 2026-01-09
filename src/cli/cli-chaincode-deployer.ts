@@ -54,10 +54,10 @@ export class CliChaincodeDeployer {
 		switch (packagingMode) {
 			case PackagingMode.PeerCli:
 				this.packageUsingPeerCli(chaincodeInfo)
-				break;
+				break
 			case PackagingMode.Manual:
 				this.packageManually(chaincodeInfo)
-				break;
+				break
 		}
 	}
 

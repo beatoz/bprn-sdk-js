@@ -21,4 +21,3 @@ export { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
 export { EvmTxParamGenerator } from "../generator/evm-tx-param-generator"
 export { SigMsgGenerator } from "../generator/sig-msg-generator"
 export { SigMsg } from "../generator/sig-msg"
-

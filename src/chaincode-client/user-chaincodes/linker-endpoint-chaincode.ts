@@ -10,35 +10,25 @@ import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
 
 export class LinkerEndpointChaincode {
-  readonly chaincode: Chaincode
+	readonly chaincode: Chaincode
 
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
 		const chaincode = await bpnNetwork.getChaincode(linkerEndpointChaincodeName)
 		return new LinkerEndpointChaincode(chaincode)
 	}
 
-  constructor(chaincode: Chaincode) {
-	  this.chaincode = chaincode
-  }
+	constructor(chaincode: Chaincode) {
+		this.chaincode = chaincode
+	}
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
 		const methodName = "InitLedger"
 		const args = [""]
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			methodName,
-			args
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), methodName, args).serialize()
 
 		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
-		return cliInvoker.invoke(
-			this.chaincode.channelName,
-			this.chaincode.chaincodeName(),
-			methodName,
-			args,
-			true
-		)
+		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, args, true)
 	}
 
 	chaincodeName() {
@@ -50,21 +40,39 @@ export class LinkerEndpointChaincode {
 	}
 
 	async registerDApp(fromAccount: Account, dAppOwner: string) {
-		const payload = await this.invoke( "RegisterDApp", [dAppOwner])
+		const payload = await this.invoke("RegisterDApp", [dAppOwner])
 		console.log("registerDApp response payload", payload)
 
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
-			linkerVerifierIdentity: payload.linkerVerifierIdentifier
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
-	async onMessage(fromChainId: string, fromDAppAddr: string, from: string, toChainId: string, toDAppChaincodeName: string, to: string, midx: string, message: string) {
+	async onMessage(
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		toChainId: string,
+		toDAppChaincodeName: string,
+		to: string,
+		midx: string,
+		message: string
+	) {
 		const payload = await this.chaincode.submit("OnMessage", [fromChainId, fromDAppAddr, from, toChainId, toDAppChaincodeName, to, midx, message])
 		console.log("OnMessage response payload", payload)
 	}
 
-	async onResponse(fromChainId: string, fromDAppAddr: string, from: string, toChainId: string, toDAppChaincodeName: string, to: string, midx: string, result: string) {
+	async onResponse(
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		toChainId: string,
+		toDAppChaincodeName: string,
+		to: string,
+		midx: string,
+		result: string
+	) {
 		const payload = await this.chaincode.submit("OnResponse", [fromChainId, fromDAppAddr, from, toChainId, toDAppChaincodeName, to, midx, result])
 		console.log("OnResponse response payload", payload)
 	}
@@ -83,19 +91,35 @@ export class LinkerEndpointChaincode {
 		return dAppChannelCount
 	}
 
-	async inboundMidxs(signer: Account, dAppAddress: string, linkerChannelIdentity: string, fromChainId: string, fromDAppAddress: string, toAccount: string, fromAccount: string) {
+	async inboundMidxs(
+		signer: Account,
+		dAppAddress: string,
+		linkerChannelIdentity: string,
+		fromChainId: string,
+		fromDAppAddress: string,
+		toAccount: string,
+		fromAccount: string
+	) {
 		const inboundMidx = await this.invoke("InboundMidxs", [dAppAddress, linkerChannelIdentity, fromChainId, fromDAppAddress, toAccount, fromAccount])
 		return inboundMidx
 	}
 
-	async outboundMidxs(signer: Account, dAppAddress: string, linkerChannelIdentity: string, toChainId: string, toDAppAddress: string, fromAccount: string, toAccount: string) {
+	async outboundMidxs(
+		signer: Account,
+		dAppAddress: string,
+		linkerChannelIdentity: string,
+		toChainId: string,
+		toDAppAddress: string,
+		fromAccount: string,
+		toAccount: string
+	) {
 		const outboundMidx = await this.invoke("OutboundMidxs", [dAppAddress, linkerChannelIdentity, toChainId, toDAppAddress, fromAccount, toAccount])
 		return outboundMidx
 	}
 
-    async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
-      return await this.invoke( "CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
-    }
+	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
+		return await this.invoke("CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
+	}
 
 	async addEventListeners() {
 		await this.chaincode.contract.addContractListener(this.chaincodeEventListener)
@@ -104,12 +128,12 @@ export class LinkerEndpointChaincode {
 	public chaincodeEventListener = async (contractEvent: ContractEvent) => {
 		try {
 			console.log("endpoint event: ", contractEvent)
-			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`);
+			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`)
 			console.log(contractEvent)
 		} catch (err) {
-			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`);
+			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`)
 		}
-	};
+	}
 
 	async query(functionName: string, args: string[] = []): Promise<any> {
 		// const lowerArgs: string[] = []
@@ -141,6 +165,4 @@ export class LinkerEndpointChaincode {
 		return response.payload
 		//return result.payload.tx.payload.details
 	}
-
-
 }

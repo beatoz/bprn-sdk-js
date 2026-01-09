@@ -18,13 +18,13 @@ export function bigIntParamToHex(value: string): string {
 
 export function decodeFromHex(messageHex: string): string {
 	try {
-		const bigIntValue = BigInt(messageHex);
-		return bigIntValue.toString();
+		const bigIntValue = BigInt(messageHex)
+		return bigIntValue.toString()
 	} catch (_error) {
-		return messageHex;
+		return messageHex
 	}
 }
 
 export function decodeFromBase64(base64Str: string): Buffer {
-	return Buffer.from(base64Str, 'base64')
+	return Buffer.from(base64Str, "base64")
 }

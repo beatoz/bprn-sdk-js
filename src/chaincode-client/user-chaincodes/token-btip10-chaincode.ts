@@ -7,7 +7,6 @@ import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
 
-
 export class TokenBtip10Chaincode {
 	readonly chaincode: Chaincode
 
@@ -37,18 +36,16 @@ export class TokenBtip10Chaincode {
 			const txEvent = contractEvent.getTransactionEvent()
 			const events = txEvent.getContractEvents()
 			console.log("token contract event: ", contractEvent)
-			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`);
+			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`)
 			console.log(contractEvent)
 		} catch (err) {
-			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`);
+			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`)
 		}
-	};
+	}
 
-	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account, name: string, symbol: string, decimal: string,) {
+	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account, name: string, symbol: string, decimal: string) {
 		const methodName = "InitLedger"
-		const sigMsg =
-			new SigMsg(
-				this.chaincode.chaincodeName(), methodName, [name, symbol, decimal]).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), methodName, [name, symbol, decimal]).serialize()
 		const signature = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
 		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, [signature, name, symbol, decimal], true)
@@ -60,32 +57,32 @@ export class TokenBtip10Chaincode {
 
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
-			linkerVerifierIdentity: payload.linkerVerifierIdentifier
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
-	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount : string) {
+	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount: string) {
 		const midx = await this.invokeWithSig(fromAccount, "PostAmount", [toChainId, toDAppAddr, toAccount, amount])
 		return midx
 	}
 
-	async onMessage(fromChainId: string, fromDAppAddr: string, fromAccount: string, toAccount: string, midx: string, message : string) {
+	async onMessage(fromChainId: string, fromDAppAddr: string, fromAccount: string, toAccount: string, midx: string, message: string) {
 		const response = await this.invoke("OnMessage", [fromChainId, fromDAppAddr, fromAccount, toAccount, midx, message])
 		console.log("OnMessage response:", response)
 		return response
 	}
 
-	async onResponse(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, midx: string, result : string) {
+	async onResponse(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, midx: string, result: string) {
 		await this.invoke("OnResponse", [fromAccount.address, toChainId, toDAppAddr, toAccount, midx, result])
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message : string) {
+	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
 		const payload = await this.invokeWithSig(fromAccount, "PostMessage", [toChainId, toDAppAddr, toAccount, message])
 		console.log("PostMessage response payload: ", payload)
 
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
-			linkerVerifierIdentity: payload.linkerVerifierIdentifier
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
@@ -104,11 +101,7 @@ export class TokenBtip10Chaincode {
 	}
 
 	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			"GetOutboundMidx",
-			[toChainId, toDAppAddr, to],
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetOutboundMidx", [toChainId, toDAppAddr, to]).serialize()
 		const signature = web3Account.sign(sigMsg, fromAccount.privateKey).toHex()
 
 		const response = await this.query("GetOutboundMidx", [signature, toChainId, toDAppAddr, to])
@@ -116,11 +109,7 @@ export class TokenBtip10Chaincode {
 	}
 
 	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			"GetInboundMidx",
-			[fromChainId, fromDAppAddr, from],
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetInboundMidx", [fromChainId, fromDAppAddr, from]).serialize()
 		const signature = web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
 
 		const response = await this.query("GetInboundMidx", [signature, fromChainId, fromDAppAddr, from])
@@ -171,11 +160,7 @@ export class TokenBtip10Chaincode {
 	}
 
 	async invokeWithSig(signer: Account, functionName: string, args: string[]): Promise<any> {
-		const sigMsg = new SigMsg(
-			this.chaincode.chaincodeName(),
-			functionName,
-			args,
-		).serialize()
+		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), functionName, args).serialize()
 		const signature = web3Account.sign(sigMsg, signer.privateKey).toHex()
 
 		return this.invoke(functionName, [signature, ...args])

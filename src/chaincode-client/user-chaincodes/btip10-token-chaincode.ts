@@ -11,7 +11,6 @@ import { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
 
 // 상속 버전
 export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
-
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
@@ -31,12 +30,12 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 			const txEvent = contractEvent.getTransactionEvent()
 			const events = txEvent.getContractEvents()
 			console.log("token contract event: ", contractEvent)
-			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`);
+			logger.info(`${this.chaincodeEventListener.name}: ${contractEvent.chaincodeId}`)
 			console.log(contractEvent)
 		} catch (err) {
-			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`);
+			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`)
 		}
-	};
+	}
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account, name: string, symbol: string, decimals: string, totalSupply: string) {
 		const methodName = "InitLedger"
@@ -53,32 +52,32 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
-			linkerVerifierIdentity: payload.linkerVerifierIdentifier
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
-	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount : string) {
+	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount: string) {
 		const midx = await this.invokeWithSig(fromAccount, "PostAmount", ["", toChainId, toDAppAddr, toAccount, amount])
 		return midx
 	}
 
-	async onMessage(fromChainId: string, fromDAppAddr: string, fromAccount: string, toAccount: string, midx: string, message : string) {
+	async onMessage(fromChainId: string, fromDAppAddr: string, fromAccount: string, toAccount: string, midx: string, message: string) {
 		const response = await this.invoke("OnMessage", [fromChainId, fromDAppAddr, fromAccount, toAccount, midx, message])
 		console.log("OnMessage response:", response)
 		return response
 	}
 
-	async onResponse(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, midx: string, result : string) {
+	async onResponse(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, midx: string, result: string) {
 		await this.invoke("OnResponse", [fromAccount.address, toChainId, toDAppAddr, toAccount, midx, result])
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message : string) {
+	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
 		const payload = await this.invokeWithSig(fromAccount, "PostMessage", ["", toChainId, toDAppAddr, toAccount, message])
 		console.log("PostMessage response payload: ", payload)
 
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
-			linkerVerifierIdentity: payload.linkerVerifierIdentifier
+			linkerVerifierIdentity: payload.linkerVerifierIdentifier,
 		}
 	}
 
@@ -108,13 +107,13 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 		return await this.invokeWithSig(fromAccount, "ForceFlushInboundMessages", ["", fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}
 
-    async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
-      return await this.invoke("CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
-    }
+	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
+		return await this.invoke("CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
+	}
 
-  async Test02(data: string,) {
-    return await this.invoke("Test02", [data])
-  }
+	async Test02(data: string) {
+		return await this.invoke("Test02", [data])
+	}
 
 	async getChainId(): Promise<string> {
 		const chainId = await this.query("GetChainId", [])

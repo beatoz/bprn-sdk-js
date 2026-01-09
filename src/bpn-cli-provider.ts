@@ -42,11 +42,7 @@ export class BpnCliProvider {
 		const userInfo = this.bpnProvider.userInfoRepository.getUsersByOrganization(orgName)
 		if (userInfo.length === 0) throw new Error("no user found")
 
-		return new CliChaincodeInvokeService(
-			this.peerCli,
-			this.bpnProvider.networkInfo,
-			userInfo[0]
-		)
+		return new CliChaincodeInvokeService(this.peerCli, this.bpnProvider.networkInfo, userInfo[0])
 	}
 
 	cliChaincodeDeployAndInitService(stableCoinChaincodeSourceDir: string, orgName: string): CliChaincodeDeployInitService {
@@ -56,7 +52,7 @@ export class BpnCliProvider {
 		)
 	}
 
-	static async createCliProvider(bpnProvider: BpnProvider) : Promise<BpnCliProvider> {
+	static async createCliProvider(bpnProvider: BpnProvider): Promise<BpnCliProvider> {
 		const peerCliEnv: PeerEnvs = {
 			FABRIC_CFG_PATH: bpnProvider.bpnConfigDirInfo.configDir(),
 			PATH: "/usr/local/go/bin:/usr/local/bin",
@@ -64,6 +60,5 @@ export class BpnCliProvider {
 		const peerCli = new PeerCli(bpnProvider.bpnConfigDirInfo.binDir(), peerCliEnv)
 
 		return new BpnCliProvider(bpnProvider, peerCli)
-
 	}
 }
