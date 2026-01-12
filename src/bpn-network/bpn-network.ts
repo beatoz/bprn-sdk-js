@@ -3,17 +3,16 @@
 import { BlockListener, Contract, Gateway, ListenerOptions, Network, Wallet } from "fabric-network"
 import { logger } from "../logger"
 import { Chaincode } from "./chaincode"
+import { ChainId } from "./chainid/chainid"
 
 export class BpnNetwork {
-	private readonly network: Network
-	private readonly gateway: Gateway
-	private readonly wallet: Wallet
-
-	constructor(network: Network, gateway: Gateway, wallet: Wallet) {
+	constructor(
+		private readonly network: Network,
+		private readonly gateway: Gateway,
+		private readonly wallet: Wallet,
+		readonly chainId: ChainId
+	) {
 		logger.info("Initializing FabricNetwork")
-		this.network = network
-		this.gateway = gateway
-		this.wallet = wallet
 	}
 
 	getChannelName() {
