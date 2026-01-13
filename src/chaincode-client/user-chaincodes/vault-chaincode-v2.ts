@@ -13,7 +13,7 @@ export class VaultChaincodeV2 extends Chaincode {
 
 	static async create(bpnNetwork: BpnNetwork, vaultChaincodeName: string): Promise<VaultChaincodeV2> {
 		const contract = await bpnNetwork.getContract(vaultChaincodeName)
-		return new VaultChaincodeV2(bpnNetwork.getChannelName(), contract)
+		return new VaultChaincodeV2(bpnNetwork.getChannelName(), contract, bpnNetwork.chainType)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker) {

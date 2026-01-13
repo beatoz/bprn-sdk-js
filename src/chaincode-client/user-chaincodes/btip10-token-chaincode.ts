@@ -1,24 +1,18 @@
 /** @format */
+import logger from "../../logger"
+import { ContractEvent } from "fabric-network/lib/events"
+import * as web3Account from "@beatoz/web3-accounts"
+import { Account } from "../../types/account"
 import { BpnNetwork } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import { Account } from "../../types/account"
-import { SigMsg } from "../generator/sig-msg"
-import * as web3Account from "@beatoz/web3-accounts"
-import { ContractEvent } from "fabric-network/lib/events"
-import logger from "../../logger"
-import { Contract } from "fabric-network"
 import { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
+import { SigMsg } from "../generator/sig-msg"
 
-// 상속 버전
 export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10TokenChaincode(channelName, contract)
-	}
-
-	constructor(channelName: string, contract: Contract) {
-		super(channelName, contract)
+		return new Btip10TokenChaincode(channelName, contract, bpnNetwork.chainType)
 	}
 
 	async addEventListeners() {

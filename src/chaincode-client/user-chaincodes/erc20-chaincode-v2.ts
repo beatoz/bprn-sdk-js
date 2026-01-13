@@ -1,11 +1,9 @@
 /** @format */
 
 import { Chaincode } from "../../bpn-network"
-import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
 import { Address } from "../../types/address"
 import { Account } from "../../types/account"
 import { CliChaincodeInvoker } from "../../cli"
-import { Contract } from "fabric-network"
 import { BpnNetwork } from "../../bpn-network"
 
 export interface Erc20ChaincodeInfo {
@@ -27,7 +25,7 @@ export class Erc20ChaincodeV2 extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string) {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Erc20ChaincodeV2(channelName, contract)
+		return new Erc20ChaincodeV2(channelName, contract, bpnNetwork.chainType)
 	}
 
 	init(
@@ -46,10 +44,6 @@ export class Erc20ChaincodeV2 extends Chaincode {
 		chaincodeArgs[0] = super.generateSignature(ownerAccount, chaincodeFunctionName, chaincodeArgs)
 
 		cliInvoker.invoke(this.channelName, this.chaincodeName(), chaincodeFunctionName, chaincodeArgs, true)
-	}
-
-	constructor(channelName: string, contract: Contract) {
-		super(channelName, contract)
 	}
 
 	async info() {

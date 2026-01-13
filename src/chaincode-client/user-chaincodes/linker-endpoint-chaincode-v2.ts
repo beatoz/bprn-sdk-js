@@ -1,7 +1,6 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
 import { Account } from "../../types/account"
 import { CliChaincodeInvoker } from "../../cli"
 import { SigMsg } from "../generator/sig-msg"
@@ -9,16 +8,13 @@ import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
 import { Contract } from "fabric-network"
+import { ChainType } from "../../bpn-network/bpn-network"
 
 export class LinkerEndpointChaincodeV2 extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
 		const contract = await bpnNetwork.getContract(linkerEndpointChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new LinkerEndpointChaincodeV2(channelName, contract)
-	}
-
-	constructor(channelName: string, contract: Contract) {
-		super(channelName, contract)
+		return new LinkerEndpointChaincodeV2(channelName, contract, bpnNetwork.chainType)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {

@@ -1,30 +1,28 @@
 /** @format */
 
+import * as web3Account from "@beatoz/web3-accounts"
 import { Contract } from "fabric-network"
 import { generateChaincodeAddress } from "../types/address"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { Account } from "../types/account"
-import { SigMsg } from "../chaincode-client/generator/sig-msg"
-import * as web3Account from "@beatoz/web3-accounts"
-import { BpnNetwork } from "./bpn-network"
+import { SigMsg } from "../chaincode-client"
+import { BpnNetwork, ChainType } from "./bpn-network"
 
 export class Chaincode {
-	public readonly contract: Contract
-	public readonly channelName: string
+	constructor(
+		public readonly channelName: string,
+		public readonly contract: Contract,
+		public readonly chainType: ChainType
+	) {}
 
 	static async create2<T extends Chaincode>(
 		bpnNetwork: BpnNetwork,
 		dAppChaincodeName: string,
-		ChaincodeClass: new (channelName: string, contract: Contract) => T
+		ChaincodeClass: new (channelName: string, contract: Contract, chainType: ChainType) => T
 	): Promise<T> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new ChaincodeClass(channelName, contract)
-	}
-
-	constructor(channelName: string, contract: Contract) {
-		this.channelName = channelName
-		this.contract = contract
+		return new ChaincodeClass(channelName, contract, bpnNetwork.chainType)
 	}
 
 	public chaincodeName(): string {

@@ -5,12 +5,16 @@ import { logger } from "../logger"
 import { Chaincode } from "./chaincode"
 import { ChainId } from "./chainid/chainid"
 
+export type ChainType = string
+export const CHAIN_TYPE: ChainType = "bprn"
+
 export class BpnNetwork {
 	constructor(
 		private readonly network: Network,
 		private readonly gateway: Gateway,
 		private readonly wallet: Wallet,
-		readonly chainId: ChainId
+		readonly chainId: ChainId,
+		readonly chainType: ChainType = CHAIN_TYPE
 	) {
 		logger.info("Initializing FabricNetwork")
 	}
@@ -21,7 +25,7 @@ export class BpnNetwork {
 
 	async getChaincode(chaincodeName: string): Promise<Chaincode> {
 		const contract = await this.getContract(chaincodeName)
-		return new Chaincode(this.network.getChannel().name, contract)
+		return new Chaincode(this.network.getChannel().name, contract, this.chainType)
 	}
 
 	async getContract(chaincodeName: string): Promise<Contract> {

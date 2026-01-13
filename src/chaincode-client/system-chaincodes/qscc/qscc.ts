@@ -14,10 +14,6 @@ export class BlockchainInfo {
 }
 
 export class Qscc extends Chaincode {
-	constructor(channelName: string, qsccContract: Contract) {
-		super(channelName, qsccContract)
-	}
-
 	async getBlockByNumber(blockNumber: number) {
 		const blockRaw = await this.queryRaw("GetBlockByNumber", [this.channelName, blockNumber.toString()])
 		return BlockDecoder.decodeBlock(blockRaw)
