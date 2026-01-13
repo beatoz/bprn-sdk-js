@@ -1,8 +1,7 @@
 /** @format */
 
 import { Chaincode } from "../../bpn-network"
-import { Address } from "../../types/address"
-import { Account } from "../../types/account"
+import { Address, Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { BpnNetwork } from "../../bpn-network"
 

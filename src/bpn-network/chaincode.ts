@@ -5,8 +5,8 @@ import { Contract } from "fabric-network"
 import { generateChaincodeAddress } from "../types/address"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { Account } from "../types/account"
-import { SigMsg } from "../chaincode-client"
 import { BpnNetwork, ChainType } from "./bpn-network"
+import { SigMsg } from "../types"
 
 export class Chaincode {
 	constructor(

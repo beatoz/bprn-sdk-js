@@ -1,9 +1,8 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Account } from "../../types/account"
+import { Account, SigMsg } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
-import { SigMsg } from "../generator/sig-msg"
 import * as web3Account from "@beatoz/web3-accounts"
 
 export class DappChaincode {

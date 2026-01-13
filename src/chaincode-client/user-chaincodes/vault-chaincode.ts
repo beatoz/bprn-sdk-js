@@ -2,7 +2,7 @@
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
 import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
-import { Account } from "../../types/account"
+import { Account } from "../../types"
 import { Erc20Chaincode } from "./erc20-chaincode"
 import { CliChaincodeInvoker } from "../../cli"
 

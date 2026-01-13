@@ -1,8 +1,7 @@
 /** @format */
 import { BpnNetwork, Chaincode } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import { Account } from "../../types/account"
-import { SigMsg } from "../generator/sig-msg"
+import { Account, SigMsg } from "../../types"
 import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"

@@ -2,11 +2,10 @@
 import logger from "../../logger"
 import { ContractEvent } from "fabric-network/lib/events"
 import * as web3Account from "@beatoz/web3-accounts"
-import { Account } from "../../types/account"
 import { BpnNetwork } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
 import { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
-import { SigMsg } from "../generator/sig-msg"
+import { Account, SigMsg } from "../../types"
 
 export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
