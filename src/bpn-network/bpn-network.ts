@@ -6,7 +6,7 @@ import { Chaincode } from "./chaincode"
 import { ChainId } from "./chainid/chainid"
 
 export type ChainType = string
-export const CHAIN_TYPE: ChainType = "bprn"
+export const BPRN_CHAIN_TYPE: ChainType = "bprn"
 
 export class BpnNetwork {
 	constructor(
@@ -14,7 +14,7 @@ export class BpnNetwork {
 		private readonly gateway: Gateway,
 		private readonly wallet: Wallet,
 		readonly chainId: ChainId,
-		readonly chainType: ChainType = CHAIN_TYPE
+		readonly chainType: ChainType = BPRN_CHAIN_TYPE
 	) {
 		logger.info("Initializing FabricNetwork")
 	}

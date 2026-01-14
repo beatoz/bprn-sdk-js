@@ -1,7 +1,7 @@
 /** @format */
 
 import { WalletFactory } from "./wallet-factory"
-import { BpnNetwork, CHAIN_TYPE } from "../bpn-network"
+import { BpnNetwork, BPRN_CHAIN_TYPE } from "../bpn-network"
 import { ConnectionProfile } from "../connection-profile/connection-profile"
 import { GatewayFactory } from "./gateway-factory"
 import { NetworkFactory } from "./network-factory"
@@ -68,7 +68,7 @@ export class BpnFactory {
 		const chainIdStrategy = this.createChainIdStrategy(network, connectionProfile)
 		const chainId = await chainIdStrategy.chainId()
 
-		return new BpnNetwork(network, gateway, wallet, chainId, CHAIN_TYPE)
+		return new BpnNetwork(network, gateway, wallet, chainId, BPRN_CHAIN_TYPE)
 	}
 
 	createChainIdStrategy(network: Network, connectionProfile: ConnectionProfile): ChainIdStrategy {

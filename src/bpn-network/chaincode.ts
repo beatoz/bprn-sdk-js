@@ -2,17 +2,15 @@
 
 import * as web3Account from "@beatoz/web3-accounts"
 import { Contract } from "fabric-network"
-import { generateChaincodeAddress } from "../types/address"
+import { Account, SigMsg, generateChaincodeAddress } from "../types"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
-import { Account } from "../types/account"
-import { BpnNetwork, ChainType } from "./bpn-network"
-import { SigMsg } from "../types"
+import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
 
 export class Chaincode {
 	constructor(
 		public readonly channelName: string,
 		public readonly contract: Contract,
-		public readonly chainType: ChainType
+		public readonly chainType: ChainType = BPRN_CHAIN_TYPE
 	) {}
 
 	static async create2<T extends Chaincode>(

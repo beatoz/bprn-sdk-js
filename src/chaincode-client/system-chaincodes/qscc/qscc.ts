@@ -1,5 +1,5 @@
 /** @format */
-import { Chaincode } from "../../../bpn-network"
+import { BpnNetwork, Chaincode } from "../../../bpn-network"
 import { BlockDecoder } from "../../../blockparser"
 import * as fabprotos from "fabric-protos"
 import Long from "long"
@@ -13,6 +13,12 @@ export class BlockchainInfo {
 }
 
 export class Qscc extends Chaincode {
+	static async create(bpnNetwork: BpnNetwork): Promise<Qscc> {
+		const channelName = bpnNetwork.getChannelName()
+		const contract = await bpnNetwork.getContract('qscc')
+		return new Qscc(channelName, contract, bpnNetwork.chainType)
+	}
+
 	async getBlockByNumber(blockNumber: number) {
 		const blockRaw = await this.queryRaw("GetBlockByNumber", [this.channelName, blockNumber.toString()])
 		return BlockDecoder.decodeBlock(blockRaw)
