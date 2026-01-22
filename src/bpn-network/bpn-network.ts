@@ -25,7 +25,7 @@ export class BpnNetwork {
 
 	async getChaincode(chaincodeName: string): Promise<Chaincode> {
 		const contract = await this.getContract(chaincodeName)
-		return new Chaincode(this.network.getChannel().name, contract, this.chainType)
+		return new Chaincode(this.network.getChannel().name, contract, this.chainType, this.chainId)
 	}
 
 	async getContract(chaincodeName: string): Promise<Contract> {

@@ -16,7 +16,7 @@ export class Qscc extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork): Promise<Qscc> {
 		const channelName = bpnNetwork.getChannelName()
 		const contract = await bpnNetwork.getContract('qscc')
-		return new Qscc(channelName, contract, bpnNetwork.chainType)
+		return new Qscc(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
 	}
 
 	async getBlockByNumber(blockNumber: number) {

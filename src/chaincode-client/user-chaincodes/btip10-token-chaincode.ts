@@ -11,7 +11,7 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10TokenChaincode(channelName, contract, bpnNetwork.chainType)
+		return new Btip10TokenChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
 	}
 
 	async addEventListeners() {
@@ -92,8 +92,16 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 		return await this.queryWithSig(fromAccount, "GetOutboundMidx", ["", toChainId, toDAppAddr, to])
 	}
 
+	async getOutboundMidx2(fromAddress: string, toChainId: string, toDAppAddr: string, to: string) {
+		return await this.query("GetOutboundMidx2", [fromAddress, toChainId, toDAppAddr, to])
+	}
+
 	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
 		return await this.queryWithSig(signerAccount, "GetInboundMidx", ["", fromChainId, fromDAppAddr, from])
+	}
+
+	async getInboundMidx2(toAddress: string, fromChainId: string, fromDAppAddr: string, from: string) {
+		return await this.query("GetInboundMidx2", [toAddress, fromChainId, fromDAppAddr, from])
 	}
 
 	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
