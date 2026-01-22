@@ -1,4 +1,5 @@
 /** @format */
+import { Address } from "./address"
 
 export class Account {
 	readonly address: string
@@ -7,5 +8,9 @@ export class Account {
 	constructor(address: string, privateKey: string) {
 		this.address = address
 		this.privateKey = privateKey
+	}
+
+	get getAddress(): Address {
+		return new Address(this.address)
 	}
 }

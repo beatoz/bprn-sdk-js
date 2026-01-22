@@ -5,12 +5,14 @@ import { Contract } from "fabric-network"
 import { Account, SigMsg, generateChaincodeAddress } from "../types"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
+import { ChainId } from "./chainid/chainid"
 
 export class Chaincode {
 	constructor(
 		public readonly channelName: string,
 		public readonly contract: Contract,
-		public readonly chainType: ChainType = BPRN_CHAIN_TYPE
+		public readonly chainType: ChainType = BPRN_CHAIN_TYPE,
+		public readonly chainId: ChainId,
 	) {}
 
 	static async create2<T extends Chaincode>(

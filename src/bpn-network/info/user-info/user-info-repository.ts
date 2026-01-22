@@ -11,10 +11,10 @@ export class UserInfoRepository {
 		this.usersById = new Map()
 
 		for (const user of users) {
-			if (!this.usersByOrg.has(user.organization)) {
-				this.usersByOrg.set(user.organization, [])
+			if (!this.usersByOrg.has(user.organizationDomainName)) {
+				this.usersByOrg.set(user.organizationDomainName, [])
 			}
-			this.usersByOrg.get(user.organization)!.push(user)
+			this.usersByOrg.get(user.organizationDomainName)!.push(user)
 			this.usersById.set(user.userId, user)
 		}
 	}

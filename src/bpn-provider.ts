@@ -34,8 +34,8 @@ export class BpnProvider {
 		return peerEnv
 	}
 
-	cliChaincodeInvoker(orgName: string) {
-		const userInfos = this.userInfoRepository.getUsersByOrganization(orgName)
+	cliChaincodeInvoker(orgDomainName: string) {
+		const userInfos = this.userInfoRepository.getUsersByOrganization(orgDomainName)
 		return new CliChaincodeInvoker(this.peerCli, this.networkInfo, userInfos[0])
 	}
 
