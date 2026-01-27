@@ -1,7 +1,7 @@
 /** @format */
 
 import * as web3Account from "@beatoz/web3-accounts"
-import { Contract } from "fabric-network"
+import { Contract, Transaction } from "fabric-network"
 import { Account, SigMsg, generateChaincodeAddress } from "../types"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
@@ -34,6 +34,18 @@ export class Chaincode {
 		return prefix0x ? `0x${chaincodeAddr}` : chaincodeAddr
 	}
 
+	async addEventListener(listener: ContractListener, options?: ListenerOptions) {
+		await this.contract.addContractListener(listener, options)
+	}
+
+	public async queryTransaction(transaction: Transaction, functionName: string, args: string[] = []): Promise<any> {
+		try {
+			return await transaction.evaluate(...args)
+		} catch (error) {
+			throw new Error(`Failed to query transaction ${functionName} with args ${args}: ${error instanceof Error ? error.message : String(error)}`)
+		}
+	}
+
 	public async queryRaw(functionName: string, args: string[] = []): Promise<any> {
 		try {
 			return await this.contract.evaluateTransaction(functionName, ...args)
@@ -48,30 +60,21 @@ export class Chaincode {
 		//return JSON.parse(result.toString())
 	}
 
-	public async submitTransaction(functionName: string, args: string[]): Promise<string> {
-		try {
-			const result = await this.contract.submitTransaction(functionName, ...args)
-			return result.toString()
-		} catch (error) {
-			throw new Error(`Failed to submit transaction ${functionName} with args ${args}: ${error instanceof Error ? error.message : String(error)}`)
-		}
+	public async submit(functionName: string, args: string[]): Promise<{ transactionId: string; payload: any }> {
+		const transaction = this.contract.createTransaction(functionName)
+		return await this.submitTransaction(transaction, functionName, args)
 	}
 
-	public async submit(functionName: string, args: string[]): Promise<{ transactionId: string; payload: any }> {
+	public async submitTransaction(transaction: Transaction, functionName: string, args: string[]): Promise<{ transactionId: string; payload: any }> {
 		try {
-			const transaction = this.contract.createTransaction(functionName)
 			const result = await transaction.submit(...args)
-
-			// Get transaction ID
 			const transactionId = transaction.getTransactionId()
 
-			// Parse result if it's valid JSON, otherwise return as string
 			let payload: any
 			try {
 				const resultString = result.toString()
 				payload = resultString ? JSON.parse(resultString) : null
 			} catch (parseError) {
-				// If JSON parsing fails, return as string
 				payload = result.toString()
 			}
 
@@ -84,36 +87,31 @@ export class Chaincode {
 		}
 	}
 
-	async addEventListener(listener: ContractListener, options?: ListenerOptions) {
-		await this.contract.addContractListener(listener, options)
-	}
-
 	async invoke(functionName: string, args: string[]): Promise<any> {
 		const response = await this.submit(functionName, [...args])
 		return response.payload
 	}
 
 	async invokeWithSig(signerAccount: Account, functionName: string, args: string[]): Promise<any> {
-		args[0] = this.generateSignature(signerAccount, functionName, args)
-		return this.invoke(functionName, args)
+		const transaction = this.contract.createTransaction(functionName)
+		const sig = this.generateSignature(signerAccount, transaction.getTransactionId(), functionName, args)
+		args[0] = sig
+
+		const response = await this.submitTransaction(transaction, functionName, args)
+		return response.payload
 	}
 
 	public async queryWithSig(signerAccount: Account, functionName: string, args: string[] = []): Promise<any> {
-		args[0] = this.generateSignature(signerAccount, functionName, args)
-		const response = await this.queryRaw(functionName, args)
+		const transaction = this.contract.createTransaction(functionName)
+		const sig = this.generateSignature(signerAccount, transaction.getTransactionId(), functionName, args)
+		args[0] = sig
+
+		const response = await this.queryTransaction(transaction, functionName, args)
 		return response.toString()
 	}
 
-	protected generateSignature(signerAccount: Account, functionName: string, args: string[] = []) {
-		const sigMsg = new SigMsg(this.chaincodeName(), functionName, args).serialize()
-
-		// for (let i = 0; i < args.length; i++) {
-		// 	console.log("args[i]: ", args[i])
-		// }
-		//
-		// const sigMsgHex = Buffer.from(sigMsg).toString('hex')
-		// console.log("sigMsgHex: ", sigMsgHex)
-
+	protected generateSignature(signerAccount: Account, txid: string, functionName: string, args: string[] = []) {
+		const sigMsg = new SigMsg(txid, this.chaincodeName(), functionName, args).serialize()
 		return web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
 	}
 }

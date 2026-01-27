@@ -27,4 +27,8 @@ export class ChainId {
 	toDecimal() {
 		return this.chainId
 	}
+
+	toString() {
+		return this.chainId.toString(10)
+	}
 }

@@ -17,7 +17,8 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
 		const methodName = "InitLedger"
 		const args = [""]
-		const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
+		const emptyTxid = ""
+		const sigMsg = new SigMsg(emptyTxid, this.chaincodeName(), methodName, args).serialize()
 
 		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
@@ -45,8 +46,9 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 		midx: string,
 		message: string
 	) {
+		const emptySig = ""
 		const payload = await this.invokeWithSig(signer, "OnMessage", [
-			"",
+			emptySig,
 			fromChainId,
 			fromDAppAddr,
 			from,
@@ -136,35 +138,4 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 			logger.error(`${this.chaincodeEventListener.name} error: ${err instanceof Error ? err.message : String(err)}`)
 		}
 	}
-
-	// async query(functionName: string, args: string[] = []): Promise<any> {
-	// 	// const lowerArgs: string[] = []
-	// 	// for (let i = 0; i < args.length; i++) {
-	// 	// 	lowerArgs.push(String(args[i]).toLowerCase())
-	// 	// }
-	//
-	// 	const result = await this.query(functionName, args)
-	// 	return result.query
-	// }
-	//
-	// async invoke(functionName: string, args: string[]): Promise<any> {
-	// 	//const erc20Args = await this.erc20ArgsCreator.createArgs(signer, this.chaincode, functionName, args)
-	// 	// const sigMsg = new SigMsg(
-	// 	// 	new EvmTxParamGenerator().createEvmTxParam(1, 0),
-	// 	// 	this.chaincode.chaincodeName(),
-	// 	// 	functionName,
-	// 	// 	args,
-	// 	// ).serializeRlp()
-	// 	// const signature = web3Account.sign(sigMsg, signer.privateKey).toHex()
-	//
-	// 	// 소문자로 변환
-	// 	// const lowerArgs: string[] = []
-	// 	// for (let i = 0; i < args.length; i++) {
-	// 	// 	lowerArgs.push(String(args[i]).toLowerCase())
-	// 	// }
-	//
-	// 	const response = await this.submit(functionName, args)
-	// 	return response.payload
-	// 	//return result.payload.tx.payload.details
-	// }
 }

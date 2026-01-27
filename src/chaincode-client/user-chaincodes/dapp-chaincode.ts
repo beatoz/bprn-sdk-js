@@ -27,7 +27,7 @@ export class DappChaincode {
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
 		const methodName = "InitLedger"
-		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), methodName, []).serialize()
+		const sigMsg = new SigMsg("", this.chaincode.chaincodeName(), methodName, []).serialize()
 
 		const signature = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
@@ -69,30 +69,15 @@ export class DappChaincode {
 	}
 
 	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
-		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetOutboundMidx", [toChainId, toDAppAddr, to]).serialize()
-		const signature = web3Account.sign(sigMsg, fromAccount.privateKey).toHex()
-
-		const response = await this.query("GetOutboundMidx", [signature, toChainId, toDAppAddr, to])
-		console.log("GetOutboundMidx response:", response)
-
-		return response
+		return await this.chaincode.queryWithSig(fromAccount, "GetOutboundMidx", [toChainId, toDAppAddr, to])
 	}
 
 	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
-		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), "GetInboundMidx", [fromChainId, fromDAppAddr, from]).serialize()
-		const signature = web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
-
-		const response = await this.query("GetInboundMidx", [signature, fromChainId, fromDAppAddr, from])
-		console.log("GetInboundMidx response:", response)
-
-		return response
+		return await this.chaincode.queryWithSig(signerAccount, "GetInboundMidx", [fromChainId, fromDAppAddr, from])
 	}
 
 	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
-		const response = await this.invoke(fromAccount, "ForceFlushInboundMessages", [fromChainId, fromDAppAddr, from, newMidx, "false"])
-		console.log("ForceFlushInboundMessages response:", response)
-
-		return response
+		return this.chaincode.invokeWithSig(fromAccount, "ForceFlushInboundMessages", [fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}
 
 	async query(functionName: string, args: string[] = []): Promise<any> {
@@ -100,12 +85,6 @@ export class DappChaincode {
 	}
 
 	async invoke(signer: Account, functionName: string, args: string[]): Promise<any> {
-		//const erc20Args = await this.erc20ArgsCreator.createArgs(signer, this.chaincode, functionName, args)
-		const sigMsg = new SigMsg(this.chaincode.chaincodeName(), functionName, args).serialize()
-		const signature = web3Account.sign(sigMsg, signer.privateKey).toHex()
-
-		const response = await this.chaincode.submit(functionName, [signature, ...args])
-		return response.payload
-		//return result.payload.tx.payload.details
+		return await this.chaincode.invokeWithSig(signer, functionName, args)
 	}
 }
