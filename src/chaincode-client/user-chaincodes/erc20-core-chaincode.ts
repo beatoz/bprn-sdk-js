@@ -44,12 +44,13 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 	}
 
 	async approve(signer: Account, spender: string, amount: string) {
-		return await this.invokeWithSig(signer, "transfer", [spender, amount])
+		const emptySig = ""
+		return await this.invokeWithSig(signer, "Approve", [emptySig, spender, amount])
 	}
 
 	async transferFrom(signer: Account, from: string, to: string, amount: string): Promise<string> {
-		const transferFromPayload = await this.invokeWithSig(signer, "transfer", [from, to, amount])
-		return transferFromPayload.amount
+		const emptySig = ""
+		return await this.invokeWithSig(signer, "TransferFrom", [emptySig, from, to, amount])
 	}
 
 	async totalSupply(): Promise<string> {
