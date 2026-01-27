@@ -23,12 +23,16 @@ export class VaultChaincodeV2 extends Chaincode {
 		const vaultChaincodeAddress = this.chaincodeAddress()
 		const methodName = "Transfer"
 		const args = [this.emptySig, vaultChaincodeAddress, depositAmount]
-		const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
+		const sigMsg = new SigMsg("", this.chaincodeName(), methodName, args).serialize()
 		args[0] = web3Account.sign(sigMsg, issuerAccount.privateKey).toHex()
 
 		const depositPayload = await this.submit("DepositCollateral", [wbtzCoinChaincode.chaincodeName(), JSON.stringify(args)])
 
 		return depositPayload.payload
+	}
+
+	async depositCollateral2(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: Account, depositAmount: string) {
+		return await this.invokeWithSig(issuerAccount, "DepositCollateral2", [this.emptySig, wbtzCoinChaincode.chaincodeName(), depositAmount])
 	}
 
 	async mintStableCoin(stableCoinChaincodeName: string, toAddress: string, mintAmount: string) {
@@ -46,7 +50,7 @@ export class VaultChaincodeV2 extends Chaincode {
 		console.log("vaultChaincodeAddress", vaultChaincodeAddress)
 
 		const args = [this.emptySig, vaultChaincodeAddress, mintAmount]
-		const sigMsg = new SigMsg(this.chaincodeName(), "Transfer", args).serialize()
+		const sigMsg = new SigMsg("", this.chaincodeName(), "Transfer", args).serialize()
 		args[0] = web3Account.sign(sigMsg, btzCoinSigner.privateKey).toHex()
 
 		const ratio = "100"
