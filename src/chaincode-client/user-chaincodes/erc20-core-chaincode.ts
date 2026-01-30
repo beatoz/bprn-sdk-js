@@ -54,7 +54,7 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 	}
 
 	async totalSupply(): Promise<string> {
-		return await this.query("totalSupply", [])
+		return await this.query("TotalSupply", [])
 	}
 
 	async getAddressNonce(address: string): Promise<number> {
@@ -79,23 +79,23 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 	}
 
 	async allowance(owner: string, spender: string): Promise<string> {
-		const allowancePayload = await this.query("allowance", [owner, spender])
+		const allowancePayload = await this.query("Allowance", [owner, spender])
 		return allowancePayload.allowance
 	}
 
 	async symbol(): Promise<string> {
-		return await this.query("symbol", [])
+		return await this.query("Symbol", [])
 	}
 
 	async name(): Promise<string> {
-		return await this.query("name", [])
+		return await this.query("TokenName", [])
 	}
 
 	async decimals(): Promise<string> {
-		return await this.query("decimals", [])
+		return await this.query("Decimals", [])
 	}
 
 	async basicInfo(): Promise<Erc20BasicInfo> {
-		return await this.query("basicInfo", [])
+		return await this.query("BasicInfo", [])
 	}
 }
