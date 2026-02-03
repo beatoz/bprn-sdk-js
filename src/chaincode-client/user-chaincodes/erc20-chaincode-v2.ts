@@ -1,6 +1,5 @@
 /** @format */
 
-import { Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { BpnNetwork } from "../../bpn-network"
 import { Erc20CoreChaincode } from "./erc20-core-chaincode"

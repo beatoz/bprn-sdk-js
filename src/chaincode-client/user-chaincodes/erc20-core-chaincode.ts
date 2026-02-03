@@ -38,6 +38,11 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return await this.invokeWithSig(fromAccount, "Mint", [emptySig, toAddress.toString(), mintAmount])
 	}
 
+	async burn(fromAccount: Account, burnAmount: string) {
+		const emptySig = ""
+		return await this.invokeWithSig(fromAccount, "Burn", [emptySig, burnAmount])
+	}
+
 	async transfer(fromAccount: Account, toAddress: Address, amount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Transfer", [emptySig, toAddress.toString(), amount])
