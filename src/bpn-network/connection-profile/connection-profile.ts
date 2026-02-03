@@ -47,6 +47,7 @@ export interface ChannelPeer {
 }
 
 export interface Channel {
+	chainId: string
 	orderers?: string[]
 	peers?: { [key: string]: ChannelPeer }
 }

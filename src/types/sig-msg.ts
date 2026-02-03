@@ -4,6 +4,7 @@ import * as rlp from "rlp"
 
 export class SigMsg {
 	constructor(
+		readonly txid: string,
 		readonly chaincodeName: string,
 		readonly chaincodeMethodName: string,
 		readonly chaincodeParams: string[]
@@ -12,6 +13,7 @@ export class SigMsg {
 	toArray(): Array<number | Buffer> {
 		const sigMsgArray: Array<number | Buffer> = []
 
+		sigMsgArray.push(Buffer.from(this.txid, "hex"))
 		sigMsgArray.push(Buffer.from(this.chaincodeName, "utf-8"))
 		sigMsgArray.push(Buffer.from(this.chaincodeMethodName, "utf-8"))
 		for (const chaincodeParam of this.chaincodeParams) {

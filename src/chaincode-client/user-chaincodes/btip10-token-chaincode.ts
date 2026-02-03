@@ -1,24 +1,18 @@
 /** @format */
+import logger from "../../logger"
+import { ContractEvent } from "fabric-network/lib/events"
+import * as web3Account from "@beatoz/web3-accounts"
 import { BpnNetwork } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import { Account } from "../../types/account"
-import { SigMsg } from "../generator/sig-msg"
-import * as web3Account from "@beatoz/web3-accounts"
-import { ContractEvent } from "fabric-network/lib/events"
-import logger from "../../logger"
-import { Contract } from "fabric-network"
-import { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
+import { Account, SigMsg } from "../../types"
+import { Erc20CoreChaincode } from "./erc20-core-chaincode"
 
-// 상속 버전
-export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
+export class Btip10TokenChaincode extends Erc20CoreChaincode {
+
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10TokenChaincode(channelName, contract)
-	}
-
-	constructor(channelName: string, contract: Contract) {
-		super(channelName, contract)
+		return new Btip10TokenChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
 	}
 
 	async addEventListeners() {
@@ -39,9 +33,7 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account, name: string, symbol: string, decimals: string, totalSupply: string) {
 		const methodName = "InitLedger"
-		const args = ["", name, symbol, decimals, totalSupply]
-		const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
-		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
+		const args = [ownerAccount.address, name, symbol, decimals, totalSupply]
 
 		return cliInvoker.invoke(this.channelName, this.chaincodeName(), methodName, args, true)
 	}
@@ -57,7 +49,8 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 	}
 
 	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount: string) {
-		const midx = await this.invokeWithSig(fromAccount, "PostAmount", ["", toChainId, toDAppAddr, toAccount, amount])
+		const emptySig = ""
+		const midx = await this.invokeWithSig(fromAccount, "PostAmount", [emptySig, toChainId, toDAppAddr, toAccount, amount])
 		return midx
 	}
 
@@ -96,15 +89,26 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 	}
 
 	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
-		return await this.queryWithSig(fromAccount, "GetOutboundMidx", ["", toChainId, toDAppAddr, to])
+		const emptySig = ""
+		return await this.queryWithSig(fromAccount, "GetOutboundMidx", [emptySig, toChainId, toDAppAddr, to])
+	}
+
+	async getOutboundMidx2(fromAddress: string, toChainId: string, toDAppAddr: string, to: string) {
+		return await this.query("GetOutboundMidx2", [fromAddress, toChainId, toDAppAddr, to])
 	}
 
 	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
-		return await this.queryWithSig(signerAccount, "GetInboundMidx", ["", fromChainId, fromDAppAddr, from])
+		const emptySig = ""
+		return await this.queryWithSig(signerAccount, "GetInboundMidx", [emptySig, fromChainId, fromDAppAddr, from])
+	}
+
+	async getInboundMidx2(toAddress: string, fromChainId: string, fromDAppAddr: string, from: string) {
+		return await this.query("GetInboundMidx2", [toAddress, fromChainId, fromDAppAddr, from])
 	}
 
 	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
-		return await this.invokeWithSig(fromAccount, "ForceFlushInboundMessages", ["", fromChainId, fromDAppAddr, from, newMidx, "false"])
+		const emptySig = ""
+		return await this.invokeWithSig(fromAccount, "ForceFlushInboundMessages", [emptySig, fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}
 
 	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
@@ -119,24 +123,4 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 		const chainId = await this.query("GetChainId", [])
 		return chainId as string
 	}
-
-	// async balanceOf(address: string) {
-	// 	return await this.query("BalanceOf", [address])
-	// }
-	//
-	// async totalSupply() {
-	// 	return await this.query("TotalSupply", [])
-	// }
-	//
-	// async symbol(): Promise<string> {
-	// 	return await this.query("Symbol", [])
-	// }
-	//
-	// async name(): Promise<string> {
-	// 	return await this.query("Name", [])
-	// }
-	//
-	// async decimals(): Promise<string> {
-	// 	return await this.query("Decimals", [])
-	// }
 }

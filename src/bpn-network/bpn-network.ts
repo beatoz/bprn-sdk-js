@@ -3,17 +3,20 @@
 import { BlockListener, Contract, Gateway, ListenerOptions, Network, Wallet } from "fabric-network"
 import { logger } from "../logger"
 import { Chaincode } from "./chaincode"
+import { ChainId } from "./chainid/chainid"
+
+export type ChainType = string
+export const BPRN_CHAIN_TYPE: ChainType = "bprn"
 
 export class BpnNetwork {
-	private readonly network: Network
-	private readonly gateway: Gateway
-	private readonly wallet: Wallet
-
-	constructor(network: Network, gateway: Gateway, wallet: Wallet) {
+	constructor(
+		private readonly network: Network,
+		private readonly gateway: Gateway,
+		private readonly wallet: Wallet,
+		readonly chainId: ChainId,
+		readonly chainType: ChainType = BPRN_CHAIN_TYPE
+	) {
 		logger.info("Initializing FabricNetwork")
-		this.network = network
-		this.gateway = gateway
-		this.wallet = wallet
 	}
 
 	getChannelName() {
@@ -22,7 +25,7 @@ export class BpnNetwork {
 
 	async getChaincode(chaincodeName: string): Promise<Chaincode> {
 		const contract = await this.getContract(chaincodeName)
-		return new Chaincode(this.network.getChannel().name, contract)
+		return new Chaincode(this.network.getChannel().name, contract, this.chainType, this.chainId)
 	}
 
 	async getContract(chaincodeName: string): Promise<Contract> {

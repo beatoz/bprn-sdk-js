@@ -6,20 +6,20 @@ import { ChaincodeInfo } from "../cli/lifecycle/chaincode/params"
 
 export class CliChaincodeDeployService {
 	private readonly ccDeployer: CliChaincodeDeployer
-	private deployerInfo: UserInfo
+	private deployUserInfo: UserInfo
 	private readonly chaincodeSourceDir: string
 	private readonly chaincodePackageDir: string
 	private readonly chaincodeLang = "golang"
 
 	constructor(ccDeployer: CliChaincodeDeployer, deployerInfo: UserInfo, chaincodeSourceDir: string, chaincodePackageDir: string) {
 		this.ccDeployer = ccDeployer
-		this.deployerInfo = deployerInfo
+		this.deployUserInfo = deployerInfo
 		this.chaincodeSourceDir = chaincodeSourceDir
 		this.chaincodePackageDir = chaincodePackageDir
 	}
 
-	changeDeployer(deployerInfo: UserInfo) {
-		this.deployerInfo = deployerInfo
+	changeDeployer(deployUserInfo: UserInfo) {
+		this.deployUserInfo = deployUserInfo
 	}
 
 	upgrade(
@@ -31,7 +31,7 @@ export class CliChaincodeDeployService {
 		packagingMode = PackagingMode.PeerCli
 	) {
 		const chaincodeInfo = this.getChaincodeInfo(this.chaincodeSourceDir, channelName, chaincodeName, initRequired, version, sequence)
-		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
+		this.ccDeployer.deploy(chaincodeInfo, this.deployUserInfo.mspDir, packagingMode)
 	}
 
 	upgrade2(
@@ -44,12 +44,12 @@ export class CliChaincodeDeployService {
 		packagingMode = PackagingMode.PeerCli
 	) {
 		const chaincodeInfo = this.getChaincodeInfo(chaincodeSourceDir, channelName, chaincodeName, initRequired, version, sequence)
-		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
+		this.ccDeployer.deploy(chaincodeInfo, this.deployUserInfo.mspDir, packagingMode)
 	}
 
 	deploy(channelName: string, chaincodeName: string, initRequired: boolean = false, packagingMode = PackagingMode.PeerCli) {
 		const chaincodeInfo = this.getChaincodeInfo(this.chaincodeSourceDir, channelName, chaincodeName, initRequired)
-		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
+		this.ccDeployer.deploy(chaincodeInfo, this.deployUserInfo.mspDir, packagingMode)
 	}
 
 	deploy2(
@@ -60,7 +60,7 @@ export class CliChaincodeDeployService {
 		packagingMode = PackagingMode.PeerCli
 	) {
 		const chaincodeInfo = this.getChaincodeInfo(chaincodeSourceDir, channelName, chaincodeName, initRequired)
-		this.ccDeployer.deploy(chaincodeInfo, this.deployerInfo.mspDir, packagingMode)
+		this.ccDeployer.deploy(chaincodeInfo, this.deployUserInfo.mspDir, packagingMode)
 	}
 
 	getChaincodeInfo(

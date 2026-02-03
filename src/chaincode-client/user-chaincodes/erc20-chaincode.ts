@@ -2,8 +2,7 @@
 
 import { Chaincode } from "../../bpn-network"
 import { Erc20ArgsGenerator } from "../generator/erc20-args-generator"
-import { Address } from "../../types/address"
-import { Account } from "../../types/account"
+import { Account, Address } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { bigIntParamToHex } from "../../utils"
 

@@ -2,13 +2,13 @@
 
 export class UserInfo {
 	public readonly userId: string
-	public readonly organization: string
+	public readonly organizationDomainName: string
 	public readonly mspDir: string
 	public readonly tlsDir: string
 
-	constructor(userId: string, organization: string, mspDir: string, tlsDir: string) {
+	constructor(userId: string, orgDomainName: string, mspDir: string, tlsDir: string) {
 		this.userId = userId
-		this.organization = organization
+		this.organizationDomainName = orgDomainName
 		this.mspDir = mspDir
 		this.tlsDir = tlsDir
 	}

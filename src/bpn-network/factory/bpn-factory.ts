@@ -1,7 +1,7 @@
 /** @format */
 
 import { WalletFactory } from "./wallet-factory"
-import { BpnNetwork } from "../bpn-network"
+import { BpnNetwork, BPRN_CHAIN_TYPE } from "../bpn-network"
 import { ConnectionProfile } from "../connection-profile/connection-profile"
 import { GatewayFactory } from "./gateway-factory"
 import { NetworkFactory } from "./network-factory"
@@ -11,6 +11,9 @@ import { NetworkInfoBuilder } from "../info/network-info/network-info-builder"
 import { UserInfoFactory } from "../info/user-info/user-info-factory"
 import { UserInfoRepository } from "../info/user-info/user-info-repository"
 import { NetworkInfo } from "../info/network-info/network-info"
+import { ChainIdStrategy } from "../chainid/chainid-strategy"
+import { Network } from "fabric-network"
+import { ChainIdFromChaincode, ChainIdFromChannelName, ChainIdFromConfig } from "../chainid/chainid-strategy-impl"
 
 export class BpnFactory {
 	private readonly configDirInfo: BpnDirInfo
@@ -62,6 +65,16 @@ export class BpnFactory {
 		const channelName = connectionProfile.channels ? Object.keys(connectionProfile.channels)[0] : ""
 		const network = await this.networkFactory.createNetwork(gateway, channelName)
 
-		return new BpnNetwork(network, gateway, wallet)
+		const chainIdStrategy = this.createChainIdStrategy(network, connectionProfile)
+		const chainId = await chainIdStrategy.chainId()
+
+		return new BpnNetwork(network, gateway, wallet, chainId, BPRN_CHAIN_TYPE)
+	}
+
+	createChainIdStrategy(network: Network, connectionProfile: ConnectionProfile): ChainIdStrategy {
+		const chainIdStrategy = new ChainIdFromChannelName(network.getChannel().name)
+		//const chainIdStrategy = new ChainIdFromChaincode(network)
+		//const chainIdStrategy = new ChainIdFromConfig(connectionProfile, network.getChannel().name)
+		return chainIdStrategy
 	}
 }
