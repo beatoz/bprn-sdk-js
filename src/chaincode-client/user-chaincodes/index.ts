@@ -8,6 +8,7 @@ export { LinkerEndpointChaincode } from "./linker-endpoint-chaincode"
 export { LinkerEndpointChaincodeV2 } from "./linker-endpoint-chaincode-v2"
 export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
+export { Btip10StablecoinChaincode } from "./btip10-stablecoin-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"
 
