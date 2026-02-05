@@ -14,7 +14,6 @@ export interface PermissionStatus {
 	burnRole: boolean
 	userLimit: string
 	paused: boolean
-	permissionsEnabled: boolean
 }
 
 export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
@@ -36,6 +35,12 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		const raw = await this.query("GetPermissionStatus", [address])
 		const str = typeof raw === "string" ? raw : String(raw)
 		return JSON.parse(str) as PermissionStatus
+	}
+
+	async getAddressesWithPermission(permission: string): Promise<string[]> {
+		const raw = await this.query("GetAddressesWithPermission", [permission])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as string[]
 	}
 
 	async enablePermissions(ownerAccount: Account): Promise<void> {
