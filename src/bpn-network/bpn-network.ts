@@ -6,7 +6,7 @@ import { Chaincode } from "./chaincode"
 import { ChainId } from "./chainid/chainid"
 
 export type ChainType = string
-export const BPRN_CHAIN_TYPE: ChainType = "bprn"
+export const BPRN_CHAIN_TYPE: ChainType = "bpn"
 
 export class BpnNetwork {
 	constructor(
