@@ -43,6 +43,12 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return JSON.parse(str) as string[]
 	}
 
+	async isPaused(): Promise<boolean> {
+		const raw = await this.query("IsPaused", [""])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return str === "true" || str === "1"
+	}
+
 	async enablePermissions(ownerAccount: Account): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "EnablePermissions", [""])
 	}
