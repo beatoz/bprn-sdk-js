@@ -35,6 +35,10 @@ export class VaultChaincodeV2 extends Chaincode {
 		return await this.submit("MintStableCoin", [stableCoinChaincodeName, toAddress, mintAmount])
 	}
 
+	async burnStableCoin(stableCoinChaincodeName: string, burnerAddress: string, burnAmount: string) {
+		return await this.submit("BurnStableCoin", [stableCoinChaincodeName, burnerAddress, burnAmount])
+	}
+
 	async depositAndMintStableCoin(
 		wbtzCoinChaincode: Btip10TokenChaincode,
 		stableCoinChaincodeName: string,
@@ -80,4 +84,6 @@ export class VaultChaincodeV2 extends Chaincode {
 			return false
 		}
 	}
+
+
 }
