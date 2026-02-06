@@ -32,9 +32,9 @@ export class Btip10TokenChaincode extends Erc20ChaincodeV2 {
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account, name: string, symbol: string, decimals: string, totalSupply: string) {
 		const methodName = "InitLedger"
-		const args = ["", name, symbol, decimals, totalSupply]
-		const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
-		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
+		const args = [ownerAccount.address, name, symbol, decimals, totalSupply]
+		//const sigMsg = new SigMsg(this.chaincodeName(), methodName, args).serialize()
+		//args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
 
 		return cliInvoker.invoke(this.channelName, this.chaincodeName(), methodName, args, true)
 	}
