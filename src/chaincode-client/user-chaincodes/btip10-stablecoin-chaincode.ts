@@ -58,14 +58,6 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return str === "true" || str === "1"
 	}
 
-	/**
-	 * @deprecated BTIP10 no longer exposes EnablePermissions.
-	 * Kept for compatibility with existing callers.
-	 */
-	async enablePermissions(ownerAccount: Account): Promise<void> {
-		await this.grantChaincodeAddressPermissions(ownerAccount)
-	}
-
 	async grantChaincodeAddressPermissions(ownerAccount: Account): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
