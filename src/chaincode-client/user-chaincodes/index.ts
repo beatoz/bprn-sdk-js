@@ -10,6 +10,7 @@ export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
 export {
 	Btip10StablecoinChaincode,
+	PermissionPrefix,
 	PermissionStatus,
 } from "./btip10-stablecoin-chaincode"
 export { DappChaincode } from "./dapp-chaincode"

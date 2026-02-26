@@ -16,6 +16,15 @@ export interface PermissionStatus {
 	paused: boolean
 }
 
+export type PermissionPrefix =
+	| "frozen"
+	| "blacklist"
+	| "whitelist"
+	| "canSend"
+	| "canReceive"
+	| "mintRole"
+	| "burnRole"
+
 export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	static async create(
 		bpnNetwork: BpnNetwork,
@@ -37,20 +46,24 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return JSON.parse(str) as PermissionStatus
 	}
 
-	async getAddressesWithPermission(permission: string): Promise<string[]> {
+	async getAddressesWithPermission(permission: PermissionPrefix | string): Promise<string[]> {
 		const raw = await this.query("GetAddressesWithPermission", [permission])
 		const str = typeof raw === "string" ? raw : String(raw)
 		return JSON.parse(str) as string[]
 	}
 
 	async isPaused(): Promise<boolean> {
-		const raw = await this.query("IsPaused", [""])
+		const raw = await this.query("IsPaused", [])
 		const str = typeof raw === "string" ? raw : String(raw)
 		return str === "true" || str === "1"
 	}
 
+	/**
+	 * @deprecated BTIP10 no longer exposes EnablePermissions.
+	 * Kept for compatibility with existing callers.
+	 */
 	async enablePermissions(ownerAccount: Account): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "EnablePermissions", [""])
+		await this.grantChaincodeAddressPermissions(ownerAccount)
 	}
 
 	async grantChaincodeAddressPermissions(ownerAccount: Account): Promise<void> {
