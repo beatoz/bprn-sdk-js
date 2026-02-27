@@ -6,6 +6,7 @@ export { Erc20ChaincodeV2 } from "./erc20-chaincode-v2"
 export { VaultChaincode, CollateralInfo } from "./vault-chaincode"
 export { LinkerEndpointChaincode } from "./linker-endpoint-chaincode"
 export { LinkerEndpointChaincodeV2 } from "./linker-endpoint-chaincode-v2"
+export { ChainIdRegistryChaincode } from "./chainid-registry-chaincode"
 export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
 export {

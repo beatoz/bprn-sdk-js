@@ -129,4 +129,28 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	async setUserLimit(ownerAccount: Account, address: string, limit: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
 	}
+
+	async setRedemptionWallet(ownerAccount: Account, redemptionWalletAddress: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "SetRedemptionWallet", ["", redemptionWalletAddress])
+	}
+
+	async getRedemptionWallet(): Promise<string> {
+		return await this.query("GetRedemptionWallet", [])
+	}
+
+	async burnFrom(fromAccount: Account, fromAddress: string, burnAmount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "BurnFrom", ["", fromAddress, burnAmount])
+	}
+
+	async receive(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Receive", ["", amount])
+	}
+
+	async fallback(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Fallback", ["", amount])
+	}
+
+	async withdraw(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Withdraw", ["", amount])
+	}
 }

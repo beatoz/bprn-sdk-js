@@ -71,6 +71,18 @@ export class VaultChaincodeV2 extends Chaincode {
 		return new CollateralInfo(BigInt(collateralInfoResult.totalCollateral.value), BigInt(collateralInfoResult.usedCollateral.value))
 	}
 
+	async getUsedCollateral(address: string): Promise<string> {
+		return await this.query("GetUsedCollateral", [address])
+	}
+
+	async getAvailableCollateral(address: string): Promise<string> {
+		return await this.query("GetAvailableCollateral", [address])
+	}
+
+	async getTotalCollateral(address: string): Promise<string> {
+		return await this.query("GetTotalCollateral", [address])
+	}
+
 	async colletaralAmount(address: string) {
 		const amount = await this.submit("ColleteralAmount", [address])
 		return amount

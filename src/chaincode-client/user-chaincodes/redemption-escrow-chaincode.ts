@@ -55,6 +55,15 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		await this.invokeWithSig(signer, "AllowStablecoin", ["", stablecoinChaincodeName])
 	}
 
+	async setRedemptionWallet(signer: Account, releaseWalletAddress: string): Promise<void> {
+		await this.invokeWithSig(signer, "SetRedemptionWallet", ["", releaseWalletAddress])
+	}
+
+	async getRedemptionWallet(): Promise<string> {
+		const result = await this.query("GetRedemptionWallet", [])
+		return this.toStringValue(result)
+	}
+
 	async isStablecoinAllowed(stablecoinChaincodeName: string): Promise<boolean> {
 		const result = await this.query("IsStablecoinAllowed", [stablecoinChaincodeName])
 		const normalized = this.toStringValue(result).toLowerCase()
@@ -88,6 +97,24 @@ export class RedemptionEscrowChaincode extends Chaincode {
 	async listRedemptionRequestsByStatus(status: string): Promise<RedemptionEscrowRequest[]> {
 		const raw = await this.query("ListRedemptionRequestsByStatus", [status])
 		return this.parseRequestList(raw)
+	}
+
+	// This is normally called by the stablecoin chaincode via cross-chaincode invoke.
+	async requestRedemption(
+		stablecoinChaincodeName: string,
+		fromAddress: string,
+		toAddress: string,
+		amount: string,
+		clientRequestID: string = ""
+	): Promise<string> {
+		const requestID = await this.invoke("RequestRedemption", [
+			stablecoinChaincodeName,
+			fromAddress,
+			toAddress,
+			amount,
+			clientRequestID,
+		])
+		return this.toStringValue(requestID)
 	}
 
 	private parseRequestList(raw: unknown): RedemptionEscrowRequest[] {
