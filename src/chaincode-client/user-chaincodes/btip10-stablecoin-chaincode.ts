@@ -1,20 +1,156 @@
+/** @format */
+
 import { BpnNetwork } from "../../bpn-network"
+import { Account } from "../../types"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
 
-export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
-	private readonly emptySig = ""
+export interface PermissionStatus {
+	frozen: boolean
+	blacklisted: boolean
+	whitelisted: boolean
+	canSend: boolean
+	canReceive: boolean
+	mintRole: boolean
+	burnRole: boolean
+	userLimit: string
+	paused: boolean
+}
 
-	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10StablecoinChaincode> {
-		const contract = await bpnNetwork.getContract(dAppChaincodeName)
+export type PermissionPrefix =
+	| "frozen"
+	| "blacklist"
+	| "whitelist"
+	| "canSend"
+	| "canReceive"
+	| "mintRole"
+	| "burnRole"
+
+export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
+	static async create(
+		bpnNetwork: BpnNetwork,
+		stablecoinChaincodeName: string,
+	): Promise<Btip10StablecoinChaincode> {
+		const contract = await bpnNetwork.getContract(stablecoinChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10StablecoinChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new Btip10StablecoinChaincode(
+			channelName,
+			contract,
+			bpnNetwork.chainType,
+			bpnNetwork.chainId,
+		)
 	}
 
-	// async mint(fromAccount: Account, toAddress: string, mintAmount: string) {
-	// 	return await this.invokeWithSig(fromAccount, "Mint", [this.emptySig, toAddress, mintAmount])
-	// }
-	//
-	// async burn(fromAccount: Account, burnAmount: string) {
-	// 	return await this.invokeWithSig(fromAccount, "Burn", [this.emptySig, burnAmount])
-	// }
+	async getPermissionStatus(address: string): Promise<PermissionStatus> {
+		const raw = await this.query("GetPermissionStatus", [address])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as PermissionStatus
+	}
+
+	async getAddressesWithPermission(permission: PermissionPrefix | string): Promise<string[]> {
+		const raw = await this.query("GetAddressesWithPermission", [permission])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as string[]
+	}
+
+	async isPaused(): Promise<boolean> {
+		const raw = await this.query("IsPaused", [])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return str === "true" || str === "1"
+	}
+
+	async grantChaincodeAddressPermissions(ownerAccount: Account): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
+	}
+
+	async grantCanSend(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "GrantCanSend", ["", address])
+	}
+
+	async grantCanReceive(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "GrantCanReceive", ["", address])
+	}
+
+	async freeze(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
+	}
+
+	async unfreeze(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
+	}
+
+	async grantMint(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
+	}
+
+	async grantBurn(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
+	}
+
+	async pause(ownerAccount: Account): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Pause", [""])
+	}
+
+	async unpause(ownerAccount: Account): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Unpause", [""])
+	}
+
+	async revokeCanSend(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "RevokeCanSend", ["", address])
+	}
+
+	async revokeCanReceive(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "RevokeCanReceive", ["", address])
+	}
+
+	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
+	}
+
+	async revokeBurn(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
+	}
+
+	async blacklist(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
+	}
+
+	async unblacklist(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
+	}
+
+	async whitelist(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "Whitelist", ["", address])
+	}
+
+	async setWhitelistMode(ownerAccount: Account, enabled: boolean): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
+	}
+
+	async setUserLimit(ownerAccount: Account, address: string, limit: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
+	}
+
+	async setRedemptionWallet(ownerAccount: Account, redemptionWalletAddress: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "SetRedemptionWallet", ["", redemptionWalletAddress])
+	}
+
+	async getRedemptionWallet(): Promise<string> {
+		return await this.query("GetRedemptionWallet", [])
+	}
+
+	async burnFrom(fromAccount: Account, fromAddress: string, burnAmount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "BurnFrom", ["", fromAddress, burnAmount])
+	}
+
+	async receive(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Receive", ["", amount])
+	}
+
+	async fallback(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Fallback", ["", amount])
+	}
+
+	async withdraw(fromAccount: Account, amount: string): Promise<void> {
+		await this.invokeWithSig(fromAccount, "Withdraw", ["", amount])
+	}
 }
