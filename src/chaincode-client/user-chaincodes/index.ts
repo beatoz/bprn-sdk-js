@@ -17,6 +17,12 @@ export {
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"
 export { RedemptionEscrowChaincode, RedemptionEscrowRequest, RedemptionStatus } from "./redemption-escrow-chaincode"
+export {
+	IssuanceEscrowChaincode,
+	IssuanceEscrowRequest,
+	IssuanceExecutionReadiness,
+	IssuanceStatus,
+} from "./issuance-escrow-chaincode"
 
 // Types
 export { Erc20CoinInfo } from "../types/erc20-coin-info"
