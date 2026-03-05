@@ -40,7 +40,16 @@ export class RedemptionEscrowChaincode extends Chaincode {
 	}
 
 	async owner(): Promise<string> {
-		return await this.query("Owner", [])
+		const result = await this.query("Owner", [])
+		return this.toStringValue(result)
+	}
+
+	async grantApprover(signer: Account, address: string): Promise<void> {
+		await this.invokeWithSig(signer, "GrantApprover", ["", address])
+	}
+
+	async revokeApprover(signer: Account, address: string): Promise<void> {
+		await this.invokeWithSig(signer, "RevokeApprover", ["", address])
 	}
 
 	async approveRedemption(signer: Account, requestId: string, approvalRef: string = ""): Promise<void> {
@@ -55,13 +64,34 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		await this.invokeWithSig(signer, "AllowStablecoin", ["", stablecoinChaincodeName])
 	}
 
+	async revokeStablecoin(signer: Account, stablecoinChaincodeName: string): Promise<void> {
+		await this.invokeWithSig(signer, "RevokeStablecoin", ["", stablecoinChaincodeName])
+	}
+
+	async setGlobalWallet(signer: Account, walletAddress: string): Promise<void> {
+		await this.invokeWithSig(signer, "SetGlobalWallet", ["", walletAddress])
+	}
+
+	async getGlobalWallet(): Promise<string> {
+		const result = await this.query("GetGlobalWallet", [])
+		return this.toStringValue(result)
+	}
+
+	async setStablecoinWallet(signer: Account, stablecoinChaincodeName: string, walletAddress: string): Promise<void> {
+		await this.invokeWithSig(signer, "SetStablecoinWallet", ["", stablecoinChaincodeName, walletAddress])
+	}
+
+	async getStablecoinWallet(stablecoinChaincodeName: string): Promise<string> {
+		const result = await this.query("GetStablecoinWallet", [stablecoinChaincodeName])
+		return this.toStringValue(result)
+	}
+
 	async setRedemptionWallet(signer: Account, releaseWalletAddress: string): Promise<void> {
-		await this.invokeWithSig(signer, "SetRedemptionWallet", ["", releaseWalletAddress])
+		await this.setGlobalWallet(signer, releaseWalletAddress)
 	}
 
 	async getRedemptionWallet(): Promise<string> {
-		const result = await this.query("GetRedemptionWallet", [])
-		return this.toStringValue(result)
+		return this.getGlobalWallet()
 	}
 
 	async isStablecoinAllowed(stablecoinChaincodeName: string): Promise<boolean> {
@@ -71,12 +101,11 @@ export class RedemptionEscrowChaincode extends Chaincode {
 	}
 
 	async setStablecoinReleaseWallet(signer: Account, stablecoinChaincodeName: string, releaseWalletAddress: string): Promise<void> {
-		await this.invokeWithSig(signer, "SetStablecoinReleaseWallet", ["", stablecoinChaincodeName, releaseWalletAddress])
+		await this.setStablecoinWallet(signer, stablecoinChaincodeName, releaseWalletAddress)
 	}
 
 	async getStablecoinReleaseWallet(stablecoinChaincodeName: string): Promise<string> {
-		const result = await this.query("GetStablecoinReleaseWallet", [stablecoinChaincodeName])
-		return this.toStringValue(result)
+		return this.getStablecoinWallet(stablecoinChaincodeName)
 	}
 
 	async getRedemptionRequest(requestId: string): Promise<RedemptionEscrowRequest> {
@@ -189,7 +218,11 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		if (value == null) {
 			return ""
 		}
-		return String(value).trim()
+		const normalized = String(value).trim()
+		if (normalized.length >= 2 && normalized.startsWith("\"") && normalized.endsWith("\"")) {
+			return normalized.slice(1, -1).trim()
+		}
+		return normalized
 	}
 
 	private toOptionalStringValue(value: unknown): string | undefined {

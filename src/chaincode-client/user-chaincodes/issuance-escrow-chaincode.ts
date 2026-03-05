@@ -46,7 +46,8 @@ export class IssuanceEscrowChaincode extends Chaincode {
 	}
 
 	async owner(): Promise<string> {
-		return await this.query("Owner", [])
+		const result = await this.query("Owner", [])
+		return this.toStringValue(result)
 	}
 
 	async getIssuanceExecutionReadiness(stablecoinChaincodeName: string): Promise<IssuanceExecutionReadiness> {
@@ -70,12 +71,12 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		await this.invokeWithSig(signer, "RevokeStablecoin", ["", stablecoinChaincodeName])
 	}
 
-	async setVaultWallet(signer: Account, vaultWalletAddress: string): Promise<void> {
-		await this.invokeWithSig(signer, "SetVaultWallet", ["", vaultWalletAddress])
+	async setGlobalWallet(signer: Account, walletAddress: string): Promise<void> {
+		await this.invokeWithSig(signer, "SetGlobalWallet", ["", walletAddress])
 	}
 
-	async getVaultWallet(): Promise<string> {
-		const result = await this.query("GetVaultWallet", [])
+	async getGlobalWallet(): Promise<string> {
+		const result = await this.query("GetGlobalWallet", [])
 		return this.toStringValue(result)
 	}
 
@@ -85,12 +86,12 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		return normalized === "true" || normalized === "1"
 	}
 
-	async setStablecoinVaultWallet(signer: Account, stablecoinChaincodeName: string, vaultWalletAddress: string): Promise<void> {
-		await this.invokeWithSig(signer, "SetStablecoinVaultWallet", ["", stablecoinChaincodeName, vaultWalletAddress])
+	async setStablecoinWallet(signer: Account, stablecoinChaincodeName: string, walletAddress: string): Promise<void> {
+		await this.invokeWithSig(signer, "SetStablecoinWallet", ["", stablecoinChaincodeName, walletAddress])
 	}
 
-	async getStablecoinVaultWallet(stablecoinChaincodeName: string): Promise<string> {
-		const result = await this.query("GetStablecoinVaultWallet", [stablecoinChaincodeName])
+	async getStablecoinWallet(stablecoinChaincodeName: string): Promise<string> {
+		const result = await this.query("GetStablecoinWallet", [stablecoinChaincodeName])
 		return this.toStringValue(result)
 	}
 
@@ -234,7 +235,11 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		if (value == null) {
 			return ""
 		}
-		return String(value).trim()
+		const normalized = String(value).trim()
+		if (normalized.length >= 2 && normalized.startsWith("\"") && normalized.endsWith("\"")) {
+			return normalized.slice(1, -1).trim()
+		}
+		return normalized
 	}
 
 	private toOptionalStringValue(value: unknown): string | undefined {
