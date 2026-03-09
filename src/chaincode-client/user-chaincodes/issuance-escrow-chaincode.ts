@@ -32,6 +32,9 @@ export interface IssuanceExecutionReadiness {
 	allowed: boolean
 	vaultWalletAddress: string
 	escrowAddress: string
+	fundedAmount: string
+	reservedAmount: string
+	availableAmount: string
 }
 
 export class IssuanceEscrowChaincode extends Chaincode {
@@ -93,6 +96,10 @@ export class IssuanceEscrowChaincode extends Chaincode {
 	async getStablecoinWallet(stablecoinChaincodeName: string): Promise<string> {
 		const result = await this.query("GetStablecoinWallet", [stablecoinChaincodeName])
 		return this.toStringValue(result)
+	}
+
+	async fundIssuanceVault(signer: Account, stablecoinChaincodeName: string, amount: string): Promise<void> {
+		await this.invokeWithSig(signer, "FundIssuanceVault", ["", stablecoinChaincodeName, amount])
 	}
 
 	async getIssuanceRequest(requestId: string): Promise<IssuanceEscrowRequest> {
@@ -161,6 +168,9 @@ export class IssuanceEscrowChaincode extends Chaincode {
 			allowed: this.toBooleanValue(row.allowed),
 			vaultWalletAddress: this.toStringValue(row.vaultWalletAddress),
 			escrowAddress: this.toStringValue(row.escrowAddress),
+			fundedAmount: this.toStringValue(row.fundedAmount),
+			reservedAmount: this.toStringValue(row.reservedAmount),
+			availableAmount: this.toStringValue(row.availableAmount),
 		}
 	}
 
