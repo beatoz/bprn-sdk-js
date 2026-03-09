@@ -138,6 +138,31 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return await this.query("GetRedemptionWallet", [])
 	}
 
+	async setIssuanceEscrowChaincode(ownerAccount: Account, chaincodeName: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "SetIssuanceEscrowChaincode", ["", chaincodeName])
+	}
+
+	async getIssuanceEscrowChaincode(): Promise<string> {
+		return await this.query("GetIssuanceEscrowChaincode", [])
+	}
+
+	async requestIssuanceToEscrow(
+		ownerAccount: Account,
+		payerAddress: string,
+		recipientAddress: string,
+		amount: string,
+		clientRequestID: string = "",
+	): Promise<string> {
+		const requestId = await this.invokeWithSig(ownerAccount, "RequestIssuanceToEscrow", [
+			"",
+			payerAddress,
+			recipientAddress,
+			amount,
+			clientRequestID,
+		])
+		return typeof requestId === "string" ? requestId : String(requestId)
+	}
+
 	async burnFrom(fromAccount: Account, fromAddress: string, burnAmount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "BurnFrom", ["", fromAddress, burnAmount])
 	}
