@@ -8,6 +8,8 @@ export interface PermissionStatus {
 	frozen: boolean
 	blacklisted: boolean
 	whitelisted: boolean
+	sendBlocked: boolean
+	receiveBlocked: boolean
 	canSend: boolean
 	canReceive: boolean
 	mintRole: boolean
@@ -20,8 +22,8 @@ export type PermissionPrefix =
 	| "frozen"
 	| "blacklist"
 	| "whitelist"
-	| "canSend"
-	| "canReceive"
+	| "blockSend"
+	| "blockReceive"
 	| "mintRole"
 	| "burnRole"
 
@@ -62,12 +64,20 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
 
-	async grantCanSend(ownerAccount: Account, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "GrantCanSend", ["", address])
+	async blockSend(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
 	}
 
-	async grantCanReceive(ownerAccount: Account, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "GrantCanReceive", ["", address])
+	async unblockSend(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
+	}
+
+	async blockReceive(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
+	}
+
+	async unblockReceive(ownerAccount: Account, address: string): Promise<void> {
+		await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
 	}
 
 	async freeze(ownerAccount: Account, address: string): Promise<void> {
@@ -92,14 +102,6 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 
 	async unpause(ownerAccount: Account): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unpause", [""])
-	}
-
-	async revokeCanSend(ownerAccount: Account, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "RevokeCanSend", ["", address])
-	}
-
-	async revokeCanReceive(ownerAccount: Account, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "RevokeCanReceive", ["", address])
 	}
 
 	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
