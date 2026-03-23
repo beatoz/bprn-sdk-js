@@ -10,8 +10,6 @@ export interface PermissionStatus {
 	whitelisted: boolean
 	sendBlocked: boolean
 	receiveBlocked: boolean
-	canSend: boolean
-	canReceive: boolean
 	mintRole: boolean
 	burnRole: boolean
 	userLimit: string
