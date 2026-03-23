@@ -3,6 +3,7 @@
 import { BpnNetwork } from "../../bpn-network"
 import { Account } from "../../types"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
+import type { PreparedSignatureInvocation } from "../../bpn-network"
 
 export interface PermissionStatus {
 	frozen: boolean
@@ -62,60 +63,120 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
 
+	prepareGrantChaincodeAddressPermissions(): PreparedSignatureInvocation {
+		return this.prepareSignature("GrantChaincodeAddressPermissions", [""])
+	}
+
 	async blockSend(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
+	}
+
+	prepareBlockSend(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("BlockSend", ["", address])
 	}
 
 	async unblockSend(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
 	}
 
+	prepareUnblockSend(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("UnblockSend", ["", address])
+	}
+
 	async blockReceive(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
+	}
+
+	prepareBlockReceive(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("BlockReceive", ["", address])
 	}
 
 	async unblockReceive(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
 	}
 
+	prepareUnblockReceive(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("UnblockReceive", ["", address])
+	}
+
 	async freeze(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
+	}
+
+	prepareFreeze(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("Freeze", ["", address])
 	}
 
 	async unfreeze(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
 	}
 
+	prepareUnfreeze(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("Unfreeze", ["", address])
+	}
+
 	async grantMint(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
+	}
+
+	prepareGrantMint(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("GrantMint", ["", address])
 	}
 
 	async grantBurn(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
 	}
 
+	prepareGrantBurn(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("GrantBurn", ["", address])
+	}
+
 	async pause(ownerAccount: Account): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Pause", [""])
+	}
+
+	preparePause(): PreparedSignatureInvocation {
+		return this.prepareSignature("Pause", [""])
 	}
 
 	async unpause(ownerAccount: Account): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unpause", [""])
 	}
 
+	prepareUnpause(): PreparedSignatureInvocation {
+		return this.prepareSignature("Unpause", [""])
+	}
+
 	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
+	}
+
+	prepareRevokeMint(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("RevokeMint", ["", address])
 	}
 
 	async revokeBurn(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
 	}
 
+	prepareRevokeBurn(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("RevokeBurn", ["", address])
+	}
+
 	async blacklist(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
 	}
 
+	prepareBlacklist(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("Blacklist", ["", address])
+	}
+
 	async unblacklist(ownerAccount: Account, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
+	}
+
+	prepareUnblacklist(address: string): PreparedSignatureInvocation {
+		return this.prepareSignature("Unblacklist", ["", address])
 	}
 
 	async whitelist(ownerAccount: Account, address: string): Promise<void> {

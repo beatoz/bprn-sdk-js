@@ -11,7 +11,7 @@ export class Signer {
 	}
 
 	sign(sigMsg: Buffer) {
-		const signature = web3Account.sign(sigMsg, this.account.privateKey)
+		const signature = web3Account.sign(sigMsg, this.account.requirePrivateKey("Signer.sign"))
 		return signature
 	}
 

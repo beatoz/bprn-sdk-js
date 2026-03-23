@@ -3,6 +3,7 @@
 // Main classes
 export { BpnNetwork } from "./bpn-network"
 export { Chaincode } from "./chaincode"
+export type { PreparedSignatureInvocation } from "./chaincode"
 
 // Factory classes
 export { BpnFactory } from "./factory/bpn-factory"

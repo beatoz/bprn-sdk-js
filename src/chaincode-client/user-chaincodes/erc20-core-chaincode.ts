@@ -4,6 +4,7 @@ import { Chaincode } from "../../bpn-network"
 import { Address, Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { BpnNetwork } from "../../bpn-network"
+import type { PreparedSignatureInvocation } from "../../bpn-network"
 
 export interface Erc20ChaincodeInfo {
 	chaincodeName: string
@@ -38,9 +39,19 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return await this.invokeWithSig(fromAccount, "Mint", [emptySig, toAddress.toString(), mintAmount])
 	}
 
+	prepareMint(toAddress: Address, mintAmount: string): PreparedSignatureInvocation {
+		const emptySig = ""
+		return this.prepareSignature("Mint", [emptySig, toAddress.toString(), mintAmount])
+	}
+
 	async burn(fromAccount: Account, burnAmount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Burn", [emptySig, burnAmount])
+	}
+
+	prepareBurn(burnAmount: string): PreparedSignatureInvocation {
+		const emptySig = ""
+		return this.prepareSignature("Burn", [emptySig, burnAmount])
 	}
 
 	async transfer(fromAccount: Account, toAddress: Address, amount: string) {
@@ -48,14 +59,33 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return await this.invokeWithSig(fromAccount, "Transfer", [emptySig, toAddress.toString(), amount])
 	}
 
+	prepareTransfer(toAddress: Address, amount: string): PreparedSignatureInvocation {
+		const emptySig = ""
+		return this.prepareSignature("Transfer", [emptySig, toAddress.toString(), amount])
+	}
+
 	async approve(signer: Account, spender: string, amount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(signer, "Approve", [emptySig, spender, amount])
 	}
 
+	prepareApprove(spender: string, amount: string): PreparedSignatureInvocation {
+		const emptySig = ""
+		return this.prepareSignature("Approve", [emptySig, spender, amount])
+	}
+
 	async transferFrom(signer: Account, from: string, to: string, amount: string): Promise<string> {
 		const emptySig = ""
 		return await this.invokeWithSig(signer, "TransferFrom", [emptySig, from, to, amount])
+	}
+
+	prepareTransferFrom(from: string, to: string, amount: string): PreparedSignatureInvocation {
+		const emptySig = ""
+		return this.prepareSignature("TransferFrom", [emptySig, from, to, amount])
+	}
+
+	async executePreparedInvocation(prepared: PreparedSignatureInvocation, sig: string): Promise<any> {
+		return await this.invokePreparedWithSig(prepared, sig)
 	}
 
 	async totalSupply(): Promise<string> {
