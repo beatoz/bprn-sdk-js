@@ -1,22 +1,11 @@
 /** @format */
 
 import * as web3Account from "@beatoz/web3-accounts"
-import { createHash } from "crypto"
 import { Contract, Transaction } from "fabric-network"
 import { Account, SigMsg, generateChaincodeAddress } from "../types"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
 import { ChainId } from "./chainid/chainid"
-
-export interface PreparedSignatureInvocation {
-	transaction: Transaction
-	transactionId: string
-	functionName: string
-	args: string[]
-	sigMsg: Uint8Array
-	chaincodeName: string
-	messageHash?: string
-}
 
 export class Chaincode {
 	constructor(
@@ -107,79 +96,36 @@ export class Chaincode {
 		return new SigMsg(txid, this.chaincodeName(), functionName, args).serialize()
 	}
 
-	prepareSignature(functionName: string, args: string[] = []): PreparedSignatureInvocation {
+	async invokeWithSig(signerAccount: Account, functionName: string, args: string[]): Promise<any> {
 		const transaction = this.contract.createTransaction(functionName)
-		const transactionId = transaction.getTransactionId()
-		const normalizedArgs = [...args]
-		return {
-			transaction,
-			transactionId,
+		const sig = this.generateSignature(
+			signerAccount,
+			transaction.getTransactionId(),
 			functionName,
-			args: normalizedArgs,
-			sigMsg: this.createSignatureMessage(transactionId, functionName, normalizedArgs),
-			chaincodeName: this.chaincodeName(),
-		}
-	}
-
-	prepareExternalSignature(functionName: string, args: string[] = []): PreparedSignatureInvocation {
-		const prepared = this.prepareSignature(functionName, args)
-		return {
-			...prepared,
-			messageHash: hashPreparedSignatureInvocation(prepared),
-		}
-	}
-
-	signPreparedInvocation(signerAccount: Account, prepared: PreparedSignatureInvocation): string {
-		return web3Account.sign(prepared.sigMsg, signerAccount.requirePrivateKey("Chaincode.signPreparedInvocation")).toHex()
-	}
-
-	async invokePreparedWithSig(prepared: PreparedSignatureInvocation, sig: string): Promise<any> {
-		const args = [...prepared.args]
+			args,
+		)
 		args[0] = sig
-		const response = await this.submitTransaction(prepared.transaction, prepared.functionName, args)
+
+		const response = await this.submitTransaction(transaction, functionName, args)
 		return response.payload
 	}
 
-	async queryPreparedWithSig(prepared: PreparedSignatureInvocation, sig: string): Promise<any> {
-		const args = [...prepared.args]
-		args[0] = sig
-		const response = await this.queryTransaction(prepared.transaction, prepared.functionName, args)
-		return response.toString()
-	}
-
-	async invokeWithSig(signerAccount: Account, functionName: string, args: string[]): Promise<any> {
-		const prepared = this.prepareSignature(functionName, args)
-		const sig = this.signPreparedInvocation(signerAccount, prepared)
-		return await this.invokePreparedWithSig(prepared, sig)
-	}
-
 	public async queryWithSig(signerAccount: Account, functionName: string, args: string[] = []): Promise<any> {
-		const prepared = this.prepareSignature(functionName, args)
-		const sig = this.signPreparedInvocation(signerAccount, prepared)
-		return await this.queryPreparedWithSig(prepared, sig)
+		const transaction = this.contract.createTransaction(functionName)
+		const sig = this.generateSignature(
+			signerAccount,
+			transaction.getTransactionId(),
+			functionName,
+			args,
+		)
+		args[0] = sig
+
+		const response = await this.queryTransaction(transaction, functionName, args)
+		return response.toString()
 	}
 
 	protected generateSignature(signerAccount: Account, txid: string, functionName: string, args: string[] = []) {
 		const sigMsg = this.createSignatureMessage(txid, functionName, args)
 		return web3Account.sign(sigMsg, signerAccount.requirePrivateKey("Chaincode.generateSignature")).toHex()
 	}
-}
-
-export function hashPreparedSignatureInvocation(prepared: Pick<PreparedSignatureInvocation, "sigMsg">): string {
-	return createHash("sha256").update(prepared.sigMsg).digest("hex")
-}
-
-export function normalizePreparedInvocationSignature(signature: string): string {
-	const hex = signature.startsWith("0x") ? signature.slice(2) : signature
-	if (hex.length !== 130) {
-		return hex
-	}
-
-	const recoveryIdHex = hex.slice(128, 130).toLowerCase()
-	if (recoveryIdHex === "1b" || recoveryIdHex === "1c") {
-		const normalizedRecoveryId = (parseInt(recoveryIdHex, 16) - 27).toString(16).padStart(2, "0")
-		return `${hex.slice(0, 128)}${normalizedRecoveryId}`
-	}
-
-	return hex
 }

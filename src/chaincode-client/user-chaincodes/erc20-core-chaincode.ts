@@ -1,6 +1,6 @@
 /** @format */
 
-import { Chaincode } from "../../bpn-network"
+import { Chaincode, ChaincodeExternalSigner } from "../../bpn-network"
 import { Address, Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { BpnNetwork } from "../../bpn-network"
@@ -22,6 +22,10 @@ export interface Erc20BasicInfo {
 export abstract class Erc20CoreChaincode extends Chaincode {
 	erc20ChaincodeInfo!: Erc20ChaincodeInfo
 
+	protected createExternalSigner(): ChaincodeExternalSigner {
+		return new ChaincodeExternalSigner(this)
+	}
+
 	async info() {
 		if (!this.erc20ChaincodeInfo) {
 			this.erc20ChaincodeInfo = {
@@ -41,7 +45,11 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 
 	prepareMint(toAddress: Address, mintAmount: string): PreparedSignatureInvocation {
 		const emptySig = ""
-		return this.prepareSignature("Mint", [emptySig, toAddress.toString(), mintAmount])
+		return this.createExternalSigner().prepareInvocation("Mint", [
+			emptySig,
+			toAddress.toString(),
+			mintAmount,
+		])
 	}
 
 	async burn(fromAccount: Account, burnAmount: string) {
@@ -51,7 +59,10 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 
 	prepareBurn(burnAmount: string): PreparedSignatureInvocation {
 		const emptySig = ""
-		return this.prepareSignature("Burn", [emptySig, burnAmount])
+		return this.createExternalSigner().prepareInvocation("Burn", [
+			emptySig,
+			burnAmount,
+		])
 	}
 
 	async transfer(fromAccount: Account, toAddress: Address, amount: string) {
@@ -61,7 +72,11 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 
 	prepareTransfer(toAddress: Address, amount: string): PreparedSignatureInvocation {
 		const emptySig = ""
-		return this.prepareSignature("Transfer", [emptySig, toAddress.toString(), amount])
+		return this.createExternalSigner().prepareInvocation("Transfer", [
+			emptySig,
+			toAddress.toString(),
+			amount,
+		])
 	}
 
 	async approve(signer: Account, spender: string, amount: string) {
@@ -71,7 +86,11 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 
 	prepareApprove(spender: string, amount: string): PreparedSignatureInvocation {
 		const emptySig = ""
-		return this.prepareSignature("Approve", [emptySig, spender, amount])
+		return this.createExternalSigner().prepareInvocation("Approve", [
+			emptySig,
+			spender,
+			amount,
+		])
 	}
 
 	async transferFrom(signer: Account, from: string, to: string, amount: string): Promise<string> {
@@ -81,11 +100,16 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 
 	prepareTransferFrom(from: string, to: string, amount: string): PreparedSignatureInvocation {
 		const emptySig = ""
-		return this.prepareSignature("TransferFrom", [emptySig, from, to, amount])
+		return this.createExternalSigner().prepareInvocation("TransferFrom", [
+			emptySig,
+			from,
+			to,
+			amount,
+		])
 	}
 
 	async executePreparedInvocation(prepared: PreparedSignatureInvocation, sig: string): Promise<any> {
-		return await this.invokePreparedWithSig(prepared, sig)
+		return await this.createExternalSigner().invokePrepared(prepared, sig)
 	}
 
 	async totalSupply(): Promise<string> {

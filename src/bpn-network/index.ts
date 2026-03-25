@@ -4,10 +4,11 @@
 export { BpnNetwork } from "./bpn-network"
 export { Chaincode } from "./chaincode"
 export {
+	ChaincodeExternalSigner,
 	hashPreparedSignatureInvocation,
 	normalizePreparedInvocationSignature,
-} from "./chaincode"
-export type { PreparedSignatureInvocation } from "./chaincode"
+} from "./chaincode-external-signer"
+export type { PreparedSignatureInvocation } from "./chaincode-external-signer"
 
 // Factory classes
 export { BpnFactory } from "./factory/bpn-factory"

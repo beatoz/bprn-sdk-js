@@ -64,7 +64,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareGrantChaincodeAddressPermissions(): PreparedSignatureInvocation {
-		return this.prepareSignature("GrantChaincodeAddressPermissions", [""])
+		return this.createExternalSigner().prepareInvocation("GrantChaincodeAddressPermissions", [""])
 	}
 
 	async blockSend(ownerAccount: Account, address: string): Promise<void> {
@@ -72,7 +72,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareBlockSend(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("BlockSend", ["", address])
+		return this.createExternalSigner().prepareInvocation("BlockSend", ["", address])
 	}
 
 	async unblockSend(ownerAccount: Account, address: string): Promise<void> {
@@ -80,7 +80,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareUnblockSend(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("UnblockSend", ["", address])
+		return this.createExternalSigner().prepareInvocation("UnblockSend", ["", address])
 	}
 
 	async blockReceive(ownerAccount: Account, address: string): Promise<void> {
@@ -88,7 +88,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareBlockReceive(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("BlockReceive", ["", address])
+		return this.createExternalSigner().prepareInvocation("BlockReceive", ["", address])
 	}
 
 	async unblockReceive(ownerAccount: Account, address: string): Promise<void> {
@@ -96,7 +96,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareUnblockReceive(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("UnblockReceive", ["", address])
+		return this.createExternalSigner().prepareInvocation("UnblockReceive", ["", address])
 	}
 
 	async freeze(ownerAccount: Account, address: string): Promise<void> {
@@ -104,7 +104,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareFreeze(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("Freeze", ["", address])
+		return this.createExternalSigner().prepareInvocation("Freeze", ["", address])
 	}
 
 	async unfreeze(ownerAccount: Account, address: string): Promise<void> {
@@ -112,7 +112,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareUnfreeze(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("Unfreeze", ["", address])
+		return this.createExternalSigner().prepareInvocation("Unfreeze", ["", address])
 	}
 
 	async grantMint(ownerAccount: Account, address: string): Promise<void> {
@@ -120,7 +120,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareGrantMint(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("GrantMint", ["", address])
+		return this.createExternalSigner().prepareInvocation("GrantMint", ["", address])
 	}
 
 	async grantBurn(ownerAccount: Account, address: string): Promise<void> {
@@ -128,7 +128,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareGrantBurn(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("GrantBurn", ["", address])
+		return this.createExternalSigner().prepareInvocation("GrantBurn", ["", address])
 	}
 
 	async pause(ownerAccount: Account): Promise<void> {
@@ -136,7 +136,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	preparePause(): PreparedSignatureInvocation {
-		return this.prepareSignature("Pause", [""])
+		return this.createExternalSigner().prepareInvocation("Pause", [""])
 	}
 
 	async unpause(ownerAccount: Account): Promise<void> {
@@ -144,7 +144,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareUnpause(): PreparedSignatureInvocation {
-		return this.prepareSignature("Unpause", [""])
+		return this.createExternalSigner().prepareInvocation("Unpause", [""])
 	}
 
 	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
@@ -152,7 +152,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareRevokeMint(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("RevokeMint", ["", address])
+		return this.createExternalSigner().prepareInvocation("RevokeMint", ["", address])
 	}
 
 	async revokeBurn(ownerAccount: Account, address: string): Promise<void> {
@@ -160,7 +160,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareRevokeBurn(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("RevokeBurn", ["", address])
+		return this.createExternalSigner().prepareInvocation("RevokeBurn", ["", address])
 	}
 
 	async blacklist(ownerAccount: Account, address: string): Promise<void> {
@@ -168,7 +168,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareBlacklist(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("Blacklist", ["", address])
+		return this.createExternalSigner().prepareInvocation("Blacklist", ["", address])
 	}
 
 	async unblacklist(ownerAccount: Account, address: string): Promise<void> {
@@ -176,7 +176,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	prepareUnblacklist(address: string): PreparedSignatureInvocation {
-		return this.prepareSignature("Unblacklist", ["", address])
+		return this.createExternalSigner().prepareInvocation("Unblacklist", ["", address])
 	}
 
 	async whitelist(ownerAccount: Account, address: string): Promise<void> {
