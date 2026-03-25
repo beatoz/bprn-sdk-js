@@ -7,6 +7,11 @@ import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
 import { ChainId } from "./chainid/chainid"
 
+export interface PreparedTransaction {
+	transaction: Transaction
+	sigMsg: Uint8Array
+}
+
 export class Chaincode {
 	constructor(
 		public readonly channelName: string,
@@ -114,4 +119,21 @@ export class Chaincode {
 		const sigMsg = new SigMsg(txid, this.chaincodeName(), functionName, args).serialize()
 		return web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
 	}
-}
+
+	// for external signer	
+	protected prepareTxWithSigMsg(functionName: string, args: string[] = []): PreparedTransaction {
+		const transaction = this.contract.createTransaction(functionName)
+		return {
+			transaction,
+			sigMsg: new SigMsg(transaction.getTransactionId(), this.chaincodeName(), functionName, args).serialize(),
+		}
+	}
+    
+	// for external signer
+	async invokeWithSigHex(transaction: Transaction, functionName: string, args: string[] = [], sigHex: string): Promise<any> {
+		const normalizedArgs = [...args]
+		normalizedArgs[0] = sigHex
+		const response = await this.submitTransaction(transaction, functionName, normalizedArgs)
+		return response.payload
+	}
+}  
