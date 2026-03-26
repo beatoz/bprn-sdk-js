@@ -5,6 +5,7 @@ import { Account, SigMsg } from "../../types"
 import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export class TokenBtip10Chaincode {
 	readonly chaincode: Chaincode
@@ -51,7 +52,10 @@ export class TokenBtip10Chaincode {
 		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, [signature, name, symbol, decimal], true)
 	}
 
-	async setLinkerEndpoint(fromAccount: Account, linkerEndpointChaincodeName: string) {
+	async setLinkerEndpoint(
+		fromAccount: ChaincodeSigner,
+		linkerEndpointChaincodeName: string,
+	) {
 		const payload = await this.chaincode.invokeWithSig(fromAccount, "SetLinkerEndpoint", [linkerEndpointChaincodeName])
 		console.log("SetLinkerEndpoint response payload: ", payload)
 
@@ -61,7 +65,13 @@ export class TokenBtip10Chaincode {
 		}
 	}
 
-	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount: string) {
+	async postAmount(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		toAccount: string,
+		amount: string,
+	) {
 		const midx = await this.chaincode.invokeWithSig(fromAccount, "PostAmount", [toChainId, toDAppAddr, toAccount, amount])
 		return midx
 	}
@@ -74,7 +84,13 @@ export class TokenBtip10Chaincode {
 		return await this.chaincode.invoke("OnResponse", [fromAccount.address, toChainId, toDAppAddr, toAccount, midx, result])
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
+	async postMessage(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		toAccount: string,
+		message: string,
+	) {
 		const payload = await this.chaincode.invokeWithSig(fromAccount, "PostMessage", [toChainId, toDAppAddr, toAccount, message])
 		return {
 			linkerChannelIdentity: payload.linkerChannelIdentifier,
@@ -93,15 +109,31 @@ export class TokenBtip10Chaincode {
 		return await this.chaincode.query("LinkerChannel")
 	}
 
-	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
+	async getOutboundMidx(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		to: string,
+	) {
 		return await this.chaincode.queryWithSig(fromAccount, "GetOutboundMidx", [toChainId, toDAppAddr, to])
 	}
 
-	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
+	async getInboundMidx(
+		signerAccount: ChaincodeSigner,
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+	) {
 		return await this.chaincode.queryWithSig(signerAccount, "GetInboundMidx", [fromChainId, fromDAppAddr, from])
 	}
 
-	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
+	async forceFlushInboundMessages(
+		fromAccount: ChaincodeSigner,
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		newMidx: string,
+	) {
 		return await this.chaincode.invokeWithSig(fromAccount, "ForceFlushInboundMessages", [fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}
 

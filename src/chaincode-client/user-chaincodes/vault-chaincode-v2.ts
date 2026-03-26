@@ -6,6 +6,7 @@ import { CliChaincodeInvoker } from "../../cli"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
 import * as web3Account from "@beatoz/web3-accounts"
 import { CollateralInfo } from "./vault-chaincode"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export class VaultChaincodeV2 extends Chaincode {
 	readonly emptySig = ""
@@ -31,7 +32,11 @@ export class VaultChaincodeV2 extends Chaincode {
 		return depositPayload.payload
 	}
 
-	async depositCollateral2(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: Account, depositAmount: string) {
+	async depositCollateral2(
+		wbtzCoinChaincode: Btip10TokenChaincode,
+		issuerAccount: ChaincodeSigner,
+		depositAmount: string,
+	) {
 		return await this.invokeWithSig(issuerAccount, "DepositCollateral2", [this.emptySig, wbtzCoinChaincode.chaincodeName(), depositAmount])
 	}
 

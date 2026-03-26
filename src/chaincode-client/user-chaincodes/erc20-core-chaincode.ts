@@ -4,7 +4,7 @@ import { Chaincode } from "../../bpn-network"
 import { Address, Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
 import { BpnNetwork } from "../../bpn-network"
-import type { PreparedTransaction } from "../../bpn-network"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export interface Erc20ChaincodeInfo {
 	chaincodeName: string
@@ -34,71 +34,29 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return this.erc20ChaincodeInfo
 	}
 
-	async mint(fromAccount: Account, toAddress: Address, mintAmount: string) {
+	async mint(fromAccount: ChaincodeSigner, toAddress: Address, mintAmount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Mint", [emptySig, toAddress.toString(), mintAmount])
 	}
 
-	prepareMint(toAddress: Address, mintAmount: string): PreparedTransaction {
-		const emptySig = ""
-		return this.prepareTxWithSigMsg("Mint", [
-			emptySig,
-			toAddress.toString(),
-			mintAmount,
-		])
-	}
-
-	async burn(fromAccount: Account, burnAmount: string) {
+	async burn(fromAccount: ChaincodeSigner, burnAmount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Burn", [emptySig, burnAmount])
 	}
 
-	prepareBurn(burnAmount: string): PreparedTransaction {
-		const emptySig = ""
-		return this.prepareTxWithSigMsg("Burn", [emptySig, burnAmount])
-	}
-
-	async transfer(fromAccount: Account, toAddress: Address, amount: string) {
+	async transfer(fromAccount: ChaincodeSigner, toAddress: Address, amount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Transfer", [emptySig, toAddress.toString(), amount])
 	}
 
-	prepareTransfer(toAddress: Address, amount: string): PreparedTransaction {
-		const emptySig = ""
-		return this.prepareTxWithSigMsg("Transfer", [
-			emptySig,
-			toAddress.toString(),
-			amount,
-		])
-	}
-
-	async approve(signer: Account, spender: string, amount: string) {
+	async approve(signer: ChaincodeSigner, spender: string, amount: string) {
 		const emptySig = ""
 		return await this.invokeWithSig(signer, "Approve", [emptySig, spender, amount])
 	}
 
-	prepareApprove(spender: string, amount: string): PreparedTransaction {
-		const emptySig = ""
-		return this.prepareTxWithSigMsg("Approve", [
-			emptySig,
-			spender,
-			amount,
-		])
-	}
-
-	async transferFrom(signer: Account, from: string, to: string, amount: string): Promise<string> {
+	async transferFrom(signer: ChaincodeSigner, from: string, to: string, amount: string): Promise<string> {
 		const emptySig = ""
 		return await this.invokeWithSig(signer, "TransferFrom", [emptySig, from, to, amount])
-	}
-
-	prepareTransferFrom(from: string, to: string, amount: string): PreparedTransaction {
-		const emptySig = ""
-		return this.prepareTxWithSigMsg("TransferFrom", [
-			emptySig,
-			from,
-			to,
-			amount,
-		])
 	}
 
 	async totalSupply(): Promise<string> {

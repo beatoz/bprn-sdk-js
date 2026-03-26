@@ -3,6 +3,7 @@
 import { BpnNetwork, Chaincode } from "../../bpn-network"
 import { Account } from "../../types"
 import { CliChaincodeInvoker } from "../../cli"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export type RedemptionStatus = "PENDING" | "APPROVED" | "REJECTED"
 
@@ -44,31 +45,48 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		return this.toStringValue(result)
 	}
 
-	async grantApprover(signer: Account, address: string): Promise<void> {
+	async grantApprover(signer: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(signer, "GrantApprover", ["", address])
 	}
 
-	async revokeApprover(signer: Account, address: string): Promise<void> {
+	async revokeApprover(signer: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(signer, "RevokeApprover", ["", address])
 	}
 
-	async approveRedemption(signer: Account, requestId: string, approvalRef: string = ""): Promise<void> {
+	async approveRedemption(
+		signer: ChaincodeSigner,
+		requestId: string,
+		approvalRef: string = "",
+	): Promise<void> {
 		await this.invokeWithSig(signer, "ApproveRedemption", ["", requestId, approvalRef])
 	}
 
-	async rejectRedemption(signer: Account, requestId: string, reason: string = ""): Promise<void> {
+	async rejectRedemption(
+		signer: ChaincodeSigner,
+		requestId: string,
+		reason: string = "",
+	): Promise<void> {
 		await this.invokeWithSig(signer, "RejectRedemption", ["", requestId, reason])
 	}
 
-	async allowStablecoin(signer: Account, stablecoinChaincodeName: string): Promise<void> {
+	async allowStablecoin(
+		signer: ChaincodeSigner,
+		stablecoinChaincodeName: string,
+	): Promise<void> {
 		await this.invokeWithSig(signer, "AllowStablecoin", ["", stablecoinChaincodeName])
 	}
 
-	async revokeStablecoin(signer: Account, stablecoinChaincodeName: string): Promise<void> {
+	async revokeStablecoin(
+		signer: ChaincodeSigner,
+		stablecoinChaincodeName: string,
+	): Promise<void> {
 		await this.invokeWithSig(signer, "RevokeStablecoin", ["", stablecoinChaincodeName])
 	}
 
-	async setGlobalWallet(signer: Account, walletAddress: string): Promise<void> {
+	async setGlobalWallet(
+		signer: ChaincodeSigner,
+		walletAddress: string,
+	): Promise<void> {
 		await this.invokeWithSig(signer, "SetGlobalWallet", ["", walletAddress])
 	}
 
@@ -77,7 +95,11 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		return this.toStringValue(result)
 	}
 
-	async setStablecoinWallet(signer: Account, stablecoinChaincodeName: string, walletAddress: string): Promise<void> {
+	async setStablecoinWallet(
+		signer: ChaincodeSigner,
+		stablecoinChaincodeName: string,
+		walletAddress: string,
+	): Promise<void> {
 		await this.invokeWithSig(signer, "SetStablecoinWallet", ["", stablecoinChaincodeName, walletAddress])
 	}
 
@@ -86,7 +108,10 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		return this.toStringValue(result)
 	}
 
-	async setRedemptionWallet(signer: Account, releaseWalletAddress: string): Promise<void> {
+	async setRedemptionWallet(
+		signer: ChaincodeSigner,
+		releaseWalletAddress: string,
+	): Promise<void> {
 		await this.setGlobalWallet(signer, releaseWalletAddress)
 	}
 
@@ -100,7 +125,11 @@ export class RedemptionEscrowChaincode extends Chaincode {
 		return normalized === "true" || normalized === "1"
 	}
 
-	async setStablecoinReleaseWallet(signer: Account, stablecoinChaincodeName: string, releaseWalletAddress: string): Promise<void> {
+	async setStablecoinReleaseWallet(
+		signer: ChaincodeSigner,
+		stablecoinChaincodeName: string,
+		releaseWalletAddress: string,
+	): Promise<void> {
 		await this.setStablecoinWallet(signer, stablecoinChaincodeName, releaseWalletAddress)
 	}
 

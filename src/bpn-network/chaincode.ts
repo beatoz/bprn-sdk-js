@@ -7,9 +7,22 @@ import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
 import { ChainId } from "./chainid/chainid"
 
-export interface PreparedTransaction {
-	transaction: Transaction
+export interface ChaincodeSignatureRequest {
 	sigMsg: Uint8Array
+	transactionId: string
+	chaincodeName: string
+	functionName: string
+	args: string[]
+}
+
+export interface ChaincodeSignatureProvider {
+	sign(request: ChaincodeSignatureRequest): Promise<string>
+}
+
+export type ChaincodeSigner = Account | ChaincodeSignatureProvider
+
+export interface PreparedTransaction extends ChaincodeSignatureRequest {
+	transaction: Transaction
 }
 
 export class Chaincode {
@@ -97,35 +110,109 @@ export class Chaincode {
 		return response.payload
 	}
 
-	async invokeWithSig(signerAccount: Account, functionName: string, args: string[]): Promise<any> {
-		const transaction = this.contract.createTransaction(functionName)
-		const sig = this.generateSignature(signerAccount, transaction.getTransactionId(), functionName, args)
-		args[0] = sig
-
-		const response = await this.submitTransaction(transaction, functionName, args)
-		return response.payload
+	async invokeWithSig(
+		signer: ChaincodeSigner,
+		functionName: string,
+		args: string[],
+	): Promise<any> {
+		const prepared = this.prepareTxWithSigMsg(functionName, args)
+		const sigHex = await this.resolveSignature(signer, prepared)
+		return await this.invokeWithSigHex(
+			prepared.transaction,
+			prepared.functionName,
+			prepared.args,
+			sigHex,
+		)
 	}
 
-	public async queryWithSig(signerAccount: Account, functionName: string, args: string[] = []): Promise<any> {
-		const transaction = this.contract.createTransaction(functionName)
-		const sig = this.generateSignature(signerAccount, transaction.getTransactionId(), functionName, args)
-		args[0] = sig
+	public async queryWithSig(
+		signer: ChaincodeSigner,
+		functionName: string,
+		args: string[] = [],
+	): Promise<any> {
+		const prepared = this.prepareTxWithSigMsg(functionName, args)
+		const sigHex = await this.resolveSignature(signer, prepared)
+		const normalizedArgs = [...prepared.args]
+		normalizedArgs[0] = sigHex
 
-		const response = await this.queryTransaction(transaction, functionName, args)
+		const response = await this.queryTransaction(
+			prepared.transaction,
+			prepared.functionName,
+			normalizedArgs,
+		)
 		return response.toString()
 	}
 
-	protected generateSignature(signerAccount: Account, txid: string, functionName: string, args: string[] = []) {
-		const sigMsg = new SigMsg(txid, this.chaincodeName(), functionName, args).serialize()
-		return web3Account.sign(sigMsg, signerAccount.privateKey).toHex()
+	protected generateSignature(
+		signerAccount: Account,
+		txid: string,
+		functionName: string,
+		args: string[] = [],
+	) {
+		const request = this.createSignatureRequest(txid, functionName, args)
+		return web3Account
+			.sign(
+				request.sigMsg,
+				signerAccount.requirePrivateKey("Chaincode.generateSignature"),
+			)
+			.toHex()
 	}
 
-	// for external signer	
-	protected prepareTxWithSigMsg(functionName: string, args: string[] = []): PreparedTransaction {
+	protected createSignatureRequest(
+		txid: string,
+		functionName: string,
+		args: string[] = [],
+	): ChaincodeSignatureRequest {
+		const normalizedArgs = [...args]
+		return {
+			transactionId: txid,
+			chaincodeName: this.chaincodeName(),
+			functionName,
+			args: normalizedArgs,
+			sigMsg: new SigMsg(
+				txid,
+				this.chaincodeName(),
+				functionName,
+				normalizedArgs,
+			).serialize(),
+		}
+	}
+
+	protected isChaincodeSignatureProvider(
+		signer: ChaincodeSigner,
+	): signer is ChaincodeSignatureProvider {
+		return typeof (signer as ChaincodeSignatureProvider).sign === "function"
+	}
+
+	protected async resolveSignature(
+		signer: ChaincodeSigner,
+		request: ChaincodeSignatureRequest,
+	): Promise<string> {
+		if (this.isChaincodeSignatureProvider(signer)) {
+			return await signer.sign(request)
+		}
+		return web3Account
+			.sign(
+				request.sigMsg,
+				signer.requirePrivateKey("Chaincode.resolveSignature"),
+			)
+			.toHex()
+	}
+
+	// advanced path for external signer
+	public prepareTxWithSigMsg(
+		functionName: string,
+		args: string[] = [],
+	): PreparedTransaction {
 		const transaction = this.contract.createTransaction(functionName)
+		const request = this.createSignatureRequest(
+			transaction.getTransactionId(),
+			functionName,
+			args,
+		)
 		return {
 			transaction,
-			sigMsg: new SigMsg(transaction.getTransactionId(), this.chaincodeName(), functionName, args).serialize(),
+			...request,
 		}
 	}
     

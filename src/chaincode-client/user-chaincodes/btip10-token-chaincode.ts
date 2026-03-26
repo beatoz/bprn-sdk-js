@@ -6,6 +6,7 @@ import { BpnNetwork } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
 import { Account, SigMsg } from "../../types"
 import { Erc20CoreChaincode } from "./erc20-core-chaincode"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export class Btip10TokenChaincode extends Erc20CoreChaincode {
 
@@ -38,7 +39,10 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		return cliInvoker.invoke(this.channelName, this.chaincodeName(), methodName, args, true)
 	}
 
-	async setLinkerEndpoint(fromAccount: Account, linkerEndpointChaincodeName: string) {
+	async setLinkerEndpoint(
+		fromAccount: ChaincodeSigner,
+		linkerEndpointChaincodeName: string,
+	) {
 		const payload = await this.invokeWithSig(fromAccount, "SetLinkerEndpoint", ["", linkerEndpointChaincodeName])
 		console.log("SetLinkerEndpoint response payload: ", payload)
 
@@ -48,7 +52,13 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		}
 	}
 
-	async postAmount(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, amount: string) {
+	async postAmount(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		toAccount: string,
+		amount: string,
+	) {
 		const emptySig = ""
 		const midx = await this.invokeWithSig(fromAccount, "PostAmount", [emptySig, toChainId, toDAppAddr, toAccount, amount])
 		return midx
@@ -64,7 +74,13 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		await this.invoke("OnResponse", [fromAccount.address, toChainId, toDAppAddr, toAccount, midx, result])
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
+	async postMessage(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		toAccount: string,
+		message: string,
+	) {
 		const payload = await this.invokeWithSig(fromAccount, "PostMessage", ["", toChainId, toDAppAddr, toAccount, message])
 		console.log("PostMessage response payload: ", payload)
 
@@ -88,7 +104,12 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		return response
 	}
 
-	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
+	async getOutboundMidx(
+		fromAccount: ChaincodeSigner,
+		toChainId: string,
+		toDAppAddr: string,
+		to: string,
+	) {
 		const emptySig = ""
 		return await this.queryWithSig(fromAccount, "GetOutboundMidx", [emptySig, toChainId, toDAppAddr, to])
 	}
@@ -97,7 +118,12 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		return await this.query("GetOutboundMidx2", [fromAddress, toChainId, toDAppAddr, to])
 	}
 
-	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
+	async getInboundMidx(
+		signerAccount: ChaincodeSigner,
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+	) {
 		const emptySig = ""
 		return await this.queryWithSig(signerAccount, "GetInboundMidx", [emptySig, fromChainId, fromDAppAddr, from])
 	}
@@ -106,7 +132,13 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 		return await this.query("GetInboundMidx2", [toAddress, fromChainId, fromDAppAddr, from])
 	}
 
-	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
+	async forceFlushInboundMessages(
+		fromAccount: ChaincodeSigner,
+		fromChainId: string,
+		fromDAppAddr: string,
+		from: string,
+		newMidx: string,
+	) {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "ForceFlushInboundMessages", [emptySig, fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}

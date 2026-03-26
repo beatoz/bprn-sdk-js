@@ -6,6 +6,7 @@ import { CliChaincodeInvoker } from "../../cli"
 import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export class LinkerEndpointChaincodeV2 extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
@@ -36,7 +37,7 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 	}
 
 	async onMessage(
-		signer: Account,
+		signer: ChaincodeSigner,
 		fromChainId: string,
 		fromDAppAddr: string,
 		from: string,
@@ -75,7 +76,12 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 		console.log("OnResponse response payload", payload)
 	}
 
-	async addDAppChannel(fromAccount: Account, dAppChaincodeName: string, toChainId: string, toDAppContractAddress: string) {
+	async addDAppChannel(
+		fromAccount: ChaincodeSigner,
+		dAppChaincodeName: string,
+		toChainId: string,
+		toDAppContractAddress: string,
+	) {
 		const payload = await this.invokeWithSig(fromAccount, "AddDAppChannel", ["", dAppChaincodeName, toChainId, toDAppContractAddress])
 	}
 

@@ -1,9 +1,8 @@
 /** @format */
 
 import { BpnNetwork } from "../../bpn-network"
-import { Account } from "../../types"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
-import type { PreparedTransaction } from "../../bpn-network"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export interface PermissionStatus {
 	frozen: boolean
@@ -59,168 +58,103 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return str === "true" || str === "1"
 	}
 
-	async grantChaincodeAddressPermissions(ownerAccount: Account): Promise<void> {
+	async grantChaincodeAddressPermissions(
+		ownerAccount: ChaincodeSigner,
+	): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
 
-	prepareGrantChaincodeAddressPermissions(): PreparedTransaction {
-		return this.prepareTxWithSigMsg("GrantChaincodeAddressPermissions", [""])
-	}
-
-	async blockSend(ownerAccount: Account, address: string): Promise<void> {
+	async blockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
 	}
 
-	prepareBlockSend(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("BlockSend", ["", address])
-	}
-
-	async unblockSend(ownerAccount: Account, address: string): Promise<void> {
+	async unblockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
 	}
 
-	prepareUnblockSend(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("UnblockSend", ["", address])
-	}
-
-	async blockReceive(ownerAccount: Account, address: string): Promise<void> {
+	async blockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
 	}
 
-	prepareBlockReceive(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("BlockReceive", ["", address])
-	}
-
-	async unblockReceive(ownerAccount: Account, address: string): Promise<void> {
+	async unblockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
 	}
 
-	prepareUnblockReceive(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("UnblockReceive", ["", address])
-	}
-
-	async freeze(ownerAccount: Account, address: string): Promise<void> {
+	async freeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
 	}
 
-	prepareFreeze(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Freeze", ["", address])
-	}
-
-	async unfreeze(ownerAccount: Account, address: string): Promise<void> {
+	async unfreeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
 	}
 
-	prepareUnfreeze(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Unfreeze", ["", address])
-	}
-
-	async grantMint(ownerAccount: Account, address: string): Promise<void> {
+	async grantMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
 	}
 
-	prepareGrantMint(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("GrantMint", ["", address])
-	}
-
-	async grantBurn(ownerAccount: Account, address: string): Promise<void> {
+	async grantBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
 	}
 
-	prepareGrantBurn(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("GrantBurn", ["", address])
-	}
-
-	async pause(ownerAccount: Account): Promise<void> {
+	async pause(ownerAccount: ChaincodeSigner): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Pause", [""])
 	}
 
-	preparePause(): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Pause", [""])
-	}
-
-	async unpause(ownerAccount: Account): Promise<void> {
+	async unpause(ownerAccount: ChaincodeSigner): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unpause", [""])
 	}
 
-	prepareUnpause(): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Unpause", [""])
-	}
-
-	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
+	async revokeMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
 	}
 
-	prepareRevokeMint(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("RevokeMint", ["", address])
-	}
-
-	async revokeBurn(ownerAccount: Account, address: string): Promise<void> {
+	async revokeBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
 	}
 
-	prepareRevokeBurn(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("RevokeBurn", ["", address])
-	}
-
-	async blacklist(ownerAccount: Account, address: string): Promise<void> {
+	async blacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
 	}
 
-	prepareBlacklist(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Blacklist", ["", address])
-	}
-
-	async unblacklist(ownerAccount: Account, address: string): Promise<void> {
+	async unblacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
 	}
 
-	prepareUnblacklist(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Unblacklist", ["", address])
-	}
-
-	async whitelist(ownerAccount: Account, address: string): Promise<void> {
+	async whitelist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Whitelist", ["", address])
 	}
 
-	prepareWhitelist(address: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Whitelist", ["", address])
-	}
-
-	async setWhitelistMode(ownerAccount: Account, enabled: boolean): Promise<void> {
+	async setWhitelistMode(
+		ownerAccount: ChaincodeSigner,
+		enabled: boolean,
+	): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
 	}
 
-	prepareSetWhitelistMode(enabled: boolean): PreparedTransaction {
-		return this.prepareTxWithSigMsg("SetWhitelistMode", ["", enabled ? "1" : "0"])
-	}
-
-	async setUserLimit(ownerAccount: Account, address: string, limit: string): Promise<void> {
+	async setUserLimit(
+		ownerAccount: ChaincodeSigner,
+		address: string,
+		limit: string,
+	): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
 	}
 
-	prepareSetUserLimit(address: string, limit: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("SetUserLimit", ["", address, limit])
-	}
-
-	async setRedemptionWallet(ownerAccount: Account, redemptionWalletAddress: string): Promise<void> {
+	async setRedemptionWallet(
+		ownerAccount: ChaincodeSigner,
+		redemptionWalletAddress: string,
+	): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetRedemptionWallet", ["", redemptionWalletAddress])
-	}
-
-	prepareSetRedemptionWallet(redemptionWalletAddress: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("SetRedemptionWallet", ["", redemptionWalletAddress])
 	}
 
 	async getRedemptionWallet(): Promise<string> {
 		return await this.query("GetRedemptionWallet", [])
 	}
 
-	async setIssuanceEscrowChaincode(ownerAccount: Account, chaincodeName: string): Promise<void> {
+	async setIssuanceEscrowChaincode(
+		ownerAccount: ChaincodeSigner,
+		chaincodeName: string,
+	): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetIssuanceEscrowChaincode", ["", chaincodeName])
-	}
-
-	prepareSetIssuanceEscrowChaincode(chaincodeName: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("SetIssuanceEscrowChaincode", ["", chaincodeName])
 	}
 
 	async getIssuanceEscrowChaincode(): Promise<string> {
@@ -228,7 +162,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	async requestIssuanceToEscrow(
-		ownerAccount: Account,
+		ownerAccount: ChaincodeSigner,
 		payerAddress: string,
 		recipientAddress: string,
 		amount: string,
@@ -244,50 +178,23 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return typeof requestId === "string" ? requestId : String(requestId)
 	}
 
-	prepareRequestIssuanceToEscrow(
-		payerAddress: string,
-		recipientAddress: string,
-		amount: string,
-		clientRequestID: string = "",
-	): PreparedTransaction {
-		return this.prepareTxWithSigMsg("RequestIssuanceToEscrow", [
-			"",
-			payerAddress,
-			recipientAddress,
-			amount,
-			clientRequestID,
-		])
-	}
-
-	async burnFrom(fromAccount: Account, fromAddress: string, burnAmount: string): Promise<void> {
+	async burnFrom(
+		fromAccount: ChaincodeSigner,
+		fromAddress: string,
+		burnAmount: string,
+	): Promise<void> {
 		await this.invokeWithSig(fromAccount, "BurnFrom", ["", fromAddress, burnAmount])
 	}
 
-	prepareBurnFrom(fromAddress: string, burnAmount: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("BurnFrom", ["", fromAddress, burnAmount])
-	}
-
-	async receive(fromAccount: Account, amount: string): Promise<void> {
+	async receive(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Receive", ["", amount])
 	}
 
-	prepareReceive(amount: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Receive", ["", amount])
-	}
-
-	async fallback(fromAccount: Account, amount: string): Promise<void> {
+	async fallback(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Fallback", ["", amount])
 	}
 
-	prepareFallback(amount: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Fallback", ["", amount])
-	}
-
-	async withdraw(fromAccount: Account, amount: string): Promise<void> {
+	async withdraw(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Withdraw", ["", amount])
-	}
-
-	prepareWithdraw(amount: string): PreparedTransaction {
-		return this.prepareTxWithSigMsg("Withdraw", ["", amount])
 	}
 }
