@@ -1,6 +1,6 @@
 /** @format */
 
-import { Account } from "../../types/account"
+import type { Erc20Actor } from "./erc20-signature"
 import { Erc20Chaincode } from "../user-chaincodes"
 import { EvmTransactionParam } from "../types/evm-transaction-param"
 
@@ -11,7 +11,7 @@ export class EvmTxParamGenerator {
 
 	constructor() {}
 
-	async create(signer: Account, chaincode: Erc20Chaincode, chaincodeMethodParams: string[]): Promise<EvmTransactionParam> {
+	async create(signer: Erc20Actor, chaincode: Erc20Chaincode, chaincodeMethodParams: string[]): Promise<EvmTransactionParam> {
 		return new EvmTransactionParam(
 			1,
 			await chaincode.getAddressNonce(signer.address),

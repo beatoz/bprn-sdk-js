@@ -1,7 +1,7 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Account } from "../../types"
+import type { ChaincodeSigner } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
 
 export type IssuanceStatus = "PENDING" | "APPROVED" | "REJECTED"
@@ -58,23 +58,23 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		return this.parseReadiness(raw)
 	}
 
-	async grantApprover(signer: Account, address: string): Promise<void> {
+	async grantApprover(signer: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(signer, "GrantApprover", ["", address])
 	}
 
-	async revokeApprover(signer: Account, address: string): Promise<void> {
+	async revokeApprover(signer: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(signer, "RevokeApprover", ["", address])
 	}
 
-	async allowStablecoin(signer: Account, stablecoinChaincodeName: string): Promise<void> {
+	async allowStablecoin(signer: ChaincodeSigner, stablecoinChaincodeName: string): Promise<void> {
 		await this.invokeWithSig(signer, "AllowStablecoin", ["", stablecoinChaincodeName])
 	}
 
-	async revokeStablecoin(signer: Account, stablecoinChaincodeName: string): Promise<void> {
+	async revokeStablecoin(signer: ChaincodeSigner, stablecoinChaincodeName: string): Promise<void> {
 		await this.invokeWithSig(signer, "RevokeStablecoin", ["", stablecoinChaincodeName])
 	}
 
-	async setGlobalWallet(signer: Account, walletAddress: string): Promise<void> {
+	async setGlobalWallet(signer: ChaincodeSigner, walletAddress: string): Promise<void> {
 		await this.invokeWithSig(signer, "SetGlobalWallet", ["", walletAddress])
 	}
 
@@ -89,7 +89,7 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		return normalized === "true" || normalized === "1"
 	}
 
-	async setStablecoinWallet(signer: Account, stablecoinChaincodeName: string, walletAddress: string): Promise<void> {
+	async setStablecoinWallet(signer: ChaincodeSigner, stablecoinChaincodeName: string, walletAddress: string): Promise<void> {
 		await this.invokeWithSig(signer, "SetStablecoinWallet", ["", stablecoinChaincodeName, walletAddress])
 	}
 
@@ -98,7 +98,7 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		return this.toStringValue(result)
 	}
 
-	async fundIssuanceVault(signer: Account, stablecoinChaincodeName: string, amount: string): Promise<void> {
+	async fundIssuanceVault(signer: ChaincodeSigner, stablecoinChaincodeName: string, amount: string): Promise<void> {
 		await this.invokeWithSig(signer, "FundIssuanceVault", ["", stablecoinChaincodeName, amount])
 	}
 
@@ -130,21 +130,15 @@ export class IssuanceEscrowChaincode extends Chaincode {
 		amount: string,
 		clientRequestID: string = ""
 	): Promise<string> {
-		const requestID = await this.invoke("RequestIssuance", [
-			stablecoinChaincodeName,
-			payerAddress,
-			recipientAddress,
-			amount,
-			clientRequestID,
-		])
+		const requestID = await this.invoke("RequestIssuance", [stablecoinChaincodeName, payerAddress, recipientAddress, amount, clientRequestID])
 		return this.toStringValue(requestID)
 	}
 
-	async approveIssuance(signer: Account, requestId: string, approvalRef: string = ""): Promise<void> {
+	async approveIssuance(signer: ChaincodeSigner, requestId: string, approvalRef: string = ""): Promise<void> {
 		await this.invokeWithSig(signer, "ApproveIssuance", ["", requestId, approvalRef])
 	}
 
-	async rejectIssuance(signer: Account, requestId: string, reason: string = ""): Promise<void> {
+	async rejectIssuance(signer: ChaincodeSigner, requestId: string, reason: string = ""): Promise<void> {
 		await this.invokeWithSig(signer, "RejectIssuance", ["", requestId, reason])
 	}
 
@@ -246,7 +240,7 @@ export class IssuanceEscrowChaincode extends Chaincode {
 			return ""
 		}
 		const normalized = String(value).trim()
-		if (normalized.length >= 2 && normalized.startsWith("\"") && normalized.endsWith("\"")) {
+		if (normalized.length >= 2 && normalized.startsWith('"') && normalized.endsWith('"')) {
 			return normalized.slice(1, -1).trim()
 		}
 		return normalized

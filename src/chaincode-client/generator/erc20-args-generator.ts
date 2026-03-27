@@ -7,6 +7,7 @@ import { Erc20Chaincode } from "../user-chaincodes"
 import { SigMsgGenerator } from "./sig-msg-generator"
 import { Erc20Args } from "../types/erc20-args"
 import { EvmTransactionParam } from "../types/evm-transaction-param"
+import { Erc20Actor, Erc20SignatureRequest } from "./erc20-signature"
 
 const SUPPORTED_FUNCTIONS = ["_mint", "_burn", "transfer", "approve", "increaseAllowance", "decreaseAllowance", "transferFrom"]
 
@@ -19,18 +20,26 @@ export class Erc20ArgsGenerator {
 		this.sigMsgGenerator = new SigMsgGenerator()
 	}
 
-	async createArgs(signer: Account, chaincode: Erc20Chaincode, chaincodeFunctionName: string, chaincodeArgs: string[]): Promise<Erc20Args> {
+	async createArgs(signer: Erc20Actor, chaincode: Erc20Chaincode, chaincodeFunctionName: string, chaincodeArgs: string[]): Promise<Erc20Args> {
 		const processedArgs = this.convertArguments(chaincodeFunctionName, chaincodeArgs)
 		const evmTxParam = await this.evmTxParamFactory.create(signer, chaincode, processedArgs)
-		const signature = this.createSignature(chaincode.chaincodeName(), chaincodeFunctionName, evmTxParam, signer)
+		const signature = await this.createSignature(chaincode.chaincodeName(), chaincodeFunctionName, evmTxParam, signer)
 
 		return new Erc20Args(evmTxParam, processedArgs, signature)
 	}
 
-	createSignature(chaincodeName: string, chaincodeFunction: string, rlpParam: EvmTransactionParam, signer: Account): string {
+	async createSignature(chaincodeName: string, chaincodeFunction: string, rlpParam: EvmTransactionParam, signer: Erc20Actor): Promise<string> {
 		try {
 			const sigMsg = this.sigMsgGenerator.createSigMsg(chaincodeName, chaincodeFunction, rlpParam)
-			const signature = web3Account.sign(sigMsg, signer.privateKey)
+			if (typeof (signer as { sign?: unknown }).sign === "function") {
+				return await (signer as { sign(request: Erc20SignatureRequest): Promise<string> }).sign({
+					chaincodeName,
+					chaincodeFunction,
+					evmTxParam: rlpParam,
+					sigMsg,
+				})
+			}
+			const signature = web3Account.sign(sigMsg, (signer as Account).requirePrivateKey("Erc20ArgsGenerator.createSignature"))
 			return signature.toHex()
 		} catch (error: any) {
 			throw new Error(`Failed to create signed transaction: ${error.message}`)

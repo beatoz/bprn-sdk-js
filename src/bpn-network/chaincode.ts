@@ -3,16 +3,60 @@
 import * as web3Account from "@beatoz/web3-accounts"
 import { Contract, Transaction } from "fabric-network"
 import { Account, SigMsg, generateChaincodeAddress } from "../types"
+import type { AddressedSignatureProvider, SignatureProvider } from "../types/signature-provider"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
 import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
 import { ChainId } from "./chainid/chainid"
+
+export interface ChaincodeSignatureRequest {
+	transactionId: string
+	chaincodeName: string
+	functionName: string
+	args: string[]
+	sigMsg: Uint8Array
+}
+
+export type ChaincodeSignatureProvider = SignatureProvider<ChaincodeSignatureRequest>
+
+export type ChaincodeSigner = Account | ChaincodeSignatureProvider
+export type ChaincodeActor = Account | AddressedSignatureProvider<ChaincodeSignatureRequest>
+/** @deprecated Use ChaincodeActor */
+export type AddressedChaincodeSigner = ChaincodeActor
+
+export function createChaincodeSignatureRequest(
+	txid: string,
+	chaincodeName: string,
+	functionName: string,
+	args: string[] = []
+): ChaincodeSignatureRequest {
+	const normalizedArgs = [...args]
+	return {
+		transactionId: txid,
+		chaincodeName,
+		functionName,
+		args: normalizedArgs,
+		sigMsg: new SigMsg(txid, chaincodeName, functionName, normalizedArgs).serialize(),
+	}
+}
+
+export function resolveChaincodeSignerAddress(signer: ChaincodeActor): string {
+	return signer.address
+}
+
+export async function signChaincodeRequest(signer: ChaincodeSigner, request: ChaincodeSignatureRequest): Promise<string> {
+	if (typeof (signer as ChaincodeSignatureProvider).sign === "function") {
+		return await (signer as ChaincodeSignatureProvider).sign(request)
+	}
+
+	return web3Account.sign(request.sigMsg, (signer as Account).requirePrivateKey("Chaincode.signChaincodeRequest")).toHex()
+}
 
 export class Chaincode {
 	constructor(
 		public readonly channelName: string,
 		public readonly contract: Contract,
 		public readonly chainType: ChainType = BPRN_CHAIN_TYPE,
-		public readonly chainId: ChainId,
+		public readonly chainId: ChainId
 	) {}
 
 	static async create2<T extends Chaincode>(
@@ -96,36 +140,34 @@ export class Chaincode {
 		return new SigMsg(txid, this.chaincodeName(), functionName, args).serialize()
 	}
 
-	async invokeWithSig(signerAccount: Account, functionName: string, args: string[]): Promise<any> {
+	async invokeWithSig(signerAccount: ChaincodeSigner, functionName: string, args: string[]): Promise<any> {
 		const transaction = this.contract.createTransaction(functionName)
-		const sig = this.generateSignature(
-			signerAccount,
-			transaction.getTransactionId(),
-			functionName,
-			args,
-		)
+		const sig = await this.resolveSignature(signerAccount, this.createSignatureRequest(transaction.getTransactionId(), functionName, args))
 		args[0] = sig
 
 		const response = await this.submitTransaction(transaction, functionName, args)
 		return response.payload
 	}
 
-	public async queryWithSig(signerAccount: Account, functionName: string, args: string[] = []): Promise<any> {
+	public async queryWithSig(signerAccount: ChaincodeSigner, functionName: string, args: string[] = []): Promise<any> {
 		const transaction = this.contract.createTransaction(functionName)
-		const sig = this.generateSignature(
-			signerAccount,
-			transaction.getTransactionId(),
-			functionName,
-			args,
-		)
+		const sig = await this.resolveSignature(signerAccount, this.createSignatureRequest(transaction.getTransactionId(), functionName, args))
 		args[0] = sig
 
 		const response = await this.queryTransaction(transaction, functionName, args)
 		return response.toString()
 	}
 
-	protected generateSignature(signerAccount: Account, txid: string, functionName: string, args: string[] = []) {
-		const sigMsg = this.createSignatureMessage(txid, functionName, args)
-		return web3Account.sign(sigMsg, signerAccount.requirePrivateKey("Chaincode.generateSignature")).toHex()
+	createSignatureRequest(txid: string, functionName: string, args: string[] = []): ChaincodeSignatureRequest {
+		return createChaincodeSignatureRequest(txid, this.chaincodeName(), functionName, args)
+	}
+
+	protected generateSignature(signerAccount: ChaincodeSigner, txid: string, functionName: string, args: string[] = []) {
+		const request = this.createSignatureRequest(txid, functionName, args)
+		return signChaincodeRequest(signerAccount, request)
+	}
+
+	protected async resolveSignature(signerAccount: ChaincodeSigner, request: ChaincodeSignatureRequest): Promise<string> {
+		return await signChaincodeRequest(signerAccount, request)
 	}
 }

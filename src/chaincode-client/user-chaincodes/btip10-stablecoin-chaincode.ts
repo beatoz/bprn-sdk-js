@@ -4,6 +4,7 @@ import { BpnNetwork } from "../../bpn-network"
 import { Account } from "../../types"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
 import type { PreparedSignatureInvocation } from "../../bpn-network"
+import type { ChaincodeSigner } from "../../bpn-network"
 
 export interface PermissionStatus {
 	frozen: boolean
@@ -17,28 +18,13 @@ export interface PermissionStatus {
 	paused: boolean
 }
 
-export type PermissionPrefix =
-	| "frozen"
-	| "blacklist"
-	| "whitelist"
-	| "blockSend"
-	| "blockReceive"
-	| "mintRole"
-	| "burnRole"
+export type PermissionPrefix = "frozen" | "blacklist" | "whitelist" | "blockSend" | "blockReceive" | "mintRole" | "burnRole"
 
 export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
-	static async create(
-		bpnNetwork: BpnNetwork,
-		stablecoinChaincodeName: string,
-	): Promise<Btip10StablecoinChaincode> {
+	static async create(bpnNetwork: BpnNetwork, stablecoinChaincodeName: string): Promise<Btip10StablecoinChaincode> {
 		const contract = await bpnNetwork.getContract(stablecoinChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10StablecoinChaincode(
-			channelName,
-			contract,
-			bpnNetwork.chainType,
-			bpnNetwork.chainId,
-		)
+		return new Btip10StablecoinChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
 	}
 
 	async getPermissionStatus(address: string): Promise<PermissionStatus> {
@@ -59,7 +45,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return str === "true" || str === "1"
 	}
 
-	async grantChaincodeAddressPermissions(ownerAccount: Account): Promise<void> {
+	async grantChaincodeAddressPermissions(ownerAccount: ChaincodeSigner): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
 
@@ -67,7 +53,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("GrantChaincodeAddressPermissions", [""])
 	}
 
-	async blockSend(ownerAccount: Account, address: string): Promise<void> {
+	async blockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
 	}
 
@@ -75,7 +61,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("BlockSend", ["", address])
 	}
 
-	async unblockSend(ownerAccount: Account, address: string): Promise<void> {
+	async unblockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
 	}
 
@@ -83,7 +69,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("UnblockSend", ["", address])
 	}
 
-	async blockReceive(ownerAccount: Account, address: string): Promise<void> {
+	async blockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
 	}
 
@@ -91,7 +77,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("BlockReceive", ["", address])
 	}
 
-	async unblockReceive(ownerAccount: Account, address: string): Promise<void> {
+	async unblockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
 	}
 
@@ -99,7 +85,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("UnblockReceive", ["", address])
 	}
 
-	async freeze(ownerAccount: Account, address: string): Promise<void> {
+	async freeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
 	}
 
@@ -107,7 +93,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Freeze", ["", address])
 	}
 
-	async unfreeze(ownerAccount: Account, address: string): Promise<void> {
+	async unfreeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
 	}
 
@@ -115,7 +101,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Unfreeze", ["", address])
 	}
 
-	async grantMint(ownerAccount: Account, address: string): Promise<void> {
+	async grantMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
 	}
 
@@ -123,7 +109,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("GrantMint", ["", address])
 	}
 
-	async grantBurn(ownerAccount: Account, address: string): Promise<void> {
+	async grantBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
 	}
 
@@ -131,7 +117,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("GrantBurn", ["", address])
 	}
 
-	async pause(ownerAccount: Account): Promise<void> {
+	async pause(ownerAccount: ChaincodeSigner): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Pause", [""])
 	}
 
@@ -139,7 +125,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Pause", [""])
 	}
 
-	async unpause(ownerAccount: Account): Promise<void> {
+	async unpause(ownerAccount: ChaincodeSigner): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unpause", [""])
 	}
 
@@ -147,7 +133,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Unpause", [""])
 	}
 
-	async revokeMint(ownerAccount: Account, address: string): Promise<void> {
+	async revokeMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
 	}
 
@@ -155,7 +141,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("RevokeMint", ["", address])
 	}
 
-	async revokeBurn(ownerAccount: Account, address: string): Promise<void> {
+	async revokeBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
 	}
 
@@ -163,7 +149,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("RevokeBurn", ["", address])
 	}
 
-	async blacklist(ownerAccount: Account, address: string): Promise<void> {
+	async blacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
 	}
 
@@ -171,7 +157,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Blacklist", ["", address])
 	}
 
-	async unblacklist(ownerAccount: Account, address: string): Promise<void> {
+	async unblacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
 	}
 
@@ -179,19 +165,19 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return this.createExternalSigner().prepareInvocation("Unblacklist", ["", address])
 	}
 
-	async whitelist(ownerAccount: Account, address: string): Promise<void> {
+	async whitelist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "Whitelist", ["", address])
 	}
 
-	async setWhitelistMode(ownerAccount: Account, enabled: boolean): Promise<void> {
+	async setWhitelistMode(ownerAccount: ChaincodeSigner, enabled: boolean): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
 	}
 
-	async setUserLimit(ownerAccount: Account, address: string, limit: string): Promise<void> {
+	async setUserLimit(ownerAccount: ChaincodeSigner, address: string, limit: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
 	}
 
-	async setRedemptionWallet(ownerAccount: Account, redemptionWalletAddress: string): Promise<void> {
+	async setRedemptionWallet(ownerAccount: ChaincodeSigner, redemptionWalletAddress: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetRedemptionWallet", ["", redemptionWalletAddress])
 	}
 
@@ -199,7 +185,7 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return await this.query("GetRedemptionWallet", [])
 	}
 
-	async setIssuanceEscrowChaincode(ownerAccount: Account, chaincodeName: string): Promise<void> {
+	async setIssuanceEscrowChaincode(ownerAccount: ChaincodeSigner, chaincodeName: string): Promise<void> {
 		await this.invokeWithSig(ownerAccount, "SetIssuanceEscrowChaincode", ["", chaincodeName])
 	}
 
@@ -208,35 +194,29 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 	}
 
 	async requestIssuanceToEscrow(
-		ownerAccount: Account,
+		ownerAccount: ChaincodeSigner,
 		payerAddress: string,
 		recipientAddress: string,
 		amount: string,
-		clientRequestID: string = "",
+		clientRequestID: string = ""
 	): Promise<string> {
-		const requestId = await this.invokeWithSig(ownerAccount, "RequestIssuanceToEscrow", [
-			"",
-			payerAddress,
-			recipientAddress,
-			amount,
-			clientRequestID,
-		])
+		const requestId = await this.invokeWithSig(ownerAccount, "RequestIssuanceToEscrow", ["", payerAddress, recipientAddress, amount, clientRequestID])
 		return typeof requestId === "string" ? requestId : String(requestId)
 	}
 
-	async burnFrom(fromAccount: Account, fromAddress: string, burnAmount: string): Promise<void> {
+	async burnFrom(fromAccount: ChaincodeSigner, fromAddress: string, burnAmount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "BurnFrom", ["", fromAddress, burnAmount])
 	}
 
-	async receive(fromAccount: Account, amount: string): Promise<void> {
+	async receive(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Receive", ["", amount])
 	}
 
-	async fallback(fromAccount: Account, amount: string): Promise<void> {
+	async fallback(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Fallback", ["", amount])
 	}
 
-	async withdraw(fromAccount: Account, amount: string): Promise<void> {
+	async withdraw(fromAccount: ChaincodeSigner, amount: string): Promise<void> {
 		await this.invokeWithSig(fromAccount, "Withdraw", ["", amount])
 	}
 }

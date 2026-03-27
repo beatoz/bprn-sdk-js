@@ -1,11 +1,11 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Account, SigMsg } from "../../types"
+import type { AddressedChaincodeSigner, ChaincodeSigner } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
 import { Btip10TokenChaincode } from "./btip10-token-chaincode"
-import * as web3Account from "@beatoz/web3-accounts"
 import { CollateralInfo } from "./vault-chaincode"
+import { signChaincodeRequest } from "../../bpn-network"
 
 export class VaultChaincodeV2 extends Chaincode {
 	readonly emptySig = ""
@@ -19,19 +19,18 @@ export class VaultChaincodeV2 extends Chaincode {
 		cliInvoker.invoke(this.channelName, this.chaincodeName(), "InitLedger", [""], true)
 	}
 
-	async depositCollateral(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: Account, depositAmount: string) {
+	async depositCollateral(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: ChaincodeSigner, depositAmount: string) {
 		const vaultChaincodeAddress = this.chaincodeAddress()
 		const methodName = "Transfer"
 		const args = [this.emptySig, vaultChaincodeAddress, depositAmount]
-		const sigMsg = new SigMsg("", this.chaincodeName(), methodName, args).serialize()
-		args[0] = web3Account.sign(sigMsg, issuerAccount.privateKey).toHex()
+		args[0] = await signChaincodeRequest(issuerAccount, this.createSignatureRequest("", methodName, args))
 
 		const depositPayload = await this.submit("DepositCollateral", [wbtzCoinChaincode.chaincodeName(), JSON.stringify(args)])
 
 		return depositPayload.payload
 	}
 
-	async depositCollateral2(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: Account, depositAmount: string) {
+	async depositCollateral2(wbtzCoinChaincode: Btip10TokenChaincode, issuerAccount: ChaincodeSigner, depositAmount: string) {
 		return await this.invokeWithSig(issuerAccount, "DepositCollateral2", [this.emptySig, wbtzCoinChaincode.chaincodeName(), depositAmount])
 	}
 
@@ -42,7 +41,7 @@ export class VaultChaincodeV2 extends Chaincode {
 	async depositAndMintStableCoin(
 		wbtzCoinChaincode: Btip10TokenChaincode,
 		stableCoinChaincodeName: string,
-		btzCoinSigner: Account,
+		btzCoinSigner: ChaincodeSigner,
 		toAddress: string,
 		mintAmount: string
 	): Promise<string> {
@@ -50,8 +49,7 @@ export class VaultChaincodeV2 extends Chaincode {
 		console.log("vaultChaincodeAddress", vaultChaincodeAddress)
 
 		const args = [this.emptySig, vaultChaincodeAddress, mintAmount]
-		const sigMsg = new SigMsg("", this.chaincodeName(), "Transfer", args).serialize()
-		args[0] = web3Account.sign(sigMsg, btzCoinSigner.privateKey).toHex()
+		args[0] = await signChaincodeRequest(btzCoinSigner, this.createSignatureRequest("", "Transfer", args))
 
 		const ratio = "100"
 		const mintPayload = await this.submit("DepositAndMintStableCoin", [

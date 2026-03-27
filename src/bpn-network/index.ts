@@ -2,12 +2,18 @@
 
 // Main classes
 export { BpnNetwork } from "./bpn-network"
-export { Chaincode } from "./chaincode"
 export {
-	ChaincodeExternalSigner,
-	hashPreparedSignatureInvocation,
-	normalizePreparedInvocationSignature,
-} from "./chaincode-external-signer"
+	AddressedChaincodeSigner,
+	Chaincode,
+	ChaincodeActor,
+	ChaincodeSignatureProvider,
+	ChaincodeSignatureRequest,
+	ChaincodeSigner,
+	createChaincodeSignatureRequest,
+	resolveChaincodeSignerAddress,
+	signChaincodeRequest,
+} from "./chaincode"
+export { ChaincodeExternalSigner, hashPreparedSignatureInvocation, normalizePreparedInvocationSignature } from "./chaincode-external-signer"
 export type { PreparedSignatureInvocation } from "./chaincode-external-signer"
 
 // Factory classes

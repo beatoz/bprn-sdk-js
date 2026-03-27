@@ -1,9 +1,9 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Account, SigMsg } from "../../types"
+import type { ChaincodeSigner } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import * as web3Account from "@beatoz/web3-accounts"
+import { signChaincodeRequest } from "../../bpn-network"
 
 export class DappChaincode {
 	readonly chaincode: Chaincode
@@ -25,16 +25,14 @@ export class DappChaincode {
 		return this.chaincode.chaincodeAddress()
 	}
 
-	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
+	async init(cliInvoker: CliChaincodeInvoker, ownerAccount: ChaincodeSigner) {
 		const methodName = "InitLedger"
-		const sigMsg = new SigMsg("", this.chaincode.chaincodeName(), methodName, []).serialize()
-
-		const signature = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
+		const signature = await signChaincodeRequest(ownerAccount, this.chaincode.createSignatureRequest("", methodName, []))
 
 		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, [signature, "", "", "", ""], true)
 	}
 
-	async setLinkerEndpoint(fromAccount: Account, linkerEndpointChaincodeName: string) {
+	async setLinkerEndpoint(fromAccount: ChaincodeSigner, linkerEndpointChaincodeName: string) {
 		const payload = await this.invoke(fromAccount, "SetLinkerEndpoint", [linkerEndpointChaincodeName])
 		console.log("SetLinkerEndpoint response payload: ", payload)
 
@@ -44,7 +42,7 @@ export class DappChaincode {
 		}
 	}
 
-	async postMessage(fromAccount: Account, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
+	async postMessage(fromAccount: ChaincodeSigner, toChainId: string, toDAppAddr: string, toAccount: string, message: string) {
 		const payload = await this.invoke(fromAccount, "PostMessage", [toChainId, toDAppAddr, toAccount, message])
 		console.log("PostMessage response payload: ", payload)
 
@@ -68,15 +66,15 @@ export class DappChaincode {
 		return response
 	}
 
-	async getOutboundMidx(fromAccount: Account, toChainId: string, toDAppAddr: string, to: string) {
+	async getOutboundMidx(fromAccount: ChaincodeSigner, toChainId: string, toDAppAddr: string, to: string) {
 		return await this.chaincode.queryWithSig(fromAccount, "GetOutboundMidx", [toChainId, toDAppAddr, to])
 	}
 
-	async getInboundMidx(signerAccount: Account, fromChainId: string, fromDAppAddr: string, from: string) {
+	async getInboundMidx(signerAccount: ChaincodeSigner, fromChainId: string, fromDAppAddr: string, from: string) {
 		return await this.chaincode.queryWithSig(signerAccount, "GetInboundMidx", [fromChainId, fromDAppAddr, from])
 	}
 
-	async forceFlushInboundMessages(fromAccount: Account, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
+	async forceFlushInboundMessages(fromAccount: ChaincodeSigner, fromChainId: string, fromDAppAddr: string, from: string, newMidx: string) {
 		return this.chaincode.invokeWithSig(fromAccount, "ForceFlushInboundMessages", [fromChainId, fromDAppAddr, from, newMidx, "false"])
 	}
 
@@ -84,7 +82,7 @@ export class DappChaincode {
 		return await this.chaincode.query(functionName, args)
 	}
 
-	async invoke(signer: Account, functionName: string, args: string[]): Promise<any> {
+	async invoke(signer: ChaincodeSigner, functionName: string, args: string[]): Promise<any> {
 		return await this.chaincode.invokeWithSig(signer, functionName, args)
 	}
 }

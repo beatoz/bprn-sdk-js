@@ -1,11 +1,11 @@
 /** @format */
 
 import { BpnNetwork, Chaincode } from "../../bpn-network"
-import { Account, SigMsg } from "../../types"
+import type { ChaincodeActor, ChaincodeSigner } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import * as web3Account from "@beatoz/web3-accounts"
 import { ContractEvent } from "fabric-network/lib/events"
 import logger from "../../logger"
+import { resolveChaincodeSignerAddress, signChaincodeRequest } from "../../bpn-network"
 
 export class LinkerEndpointChaincode {
 	readonly chaincode: Chaincode
@@ -19,12 +19,10 @@ export class LinkerEndpointChaincode {
 		this.chaincode = chaincode
 	}
 
-	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {
+	async init(cliInvoker: CliChaincodeInvoker, ownerAccount: ChaincodeSigner) {
 		const methodName = "InitLedger"
 		const args = [""]
-		const emptyTxid = ""
-		const sigMsg = new SigMsg(emptyTxid, this.chaincode.chaincodeName(), methodName, args).serialize()
-		args[0] = web3Account.sign(sigMsg, ownerAccount.privateKey).toHex()
+		args[0] = await signChaincodeRequest(ownerAccount, this.chaincode.createSignatureRequest("", methodName, args))
 
 		return cliInvoker.invoke(this.chaincode.channelName, this.chaincode.chaincodeName(), methodName, args, true)
 	}
@@ -37,7 +35,7 @@ export class LinkerEndpointChaincode {
 		return this.chaincode.chaincodeAddress()
 	}
 
-	async registerDApp(fromAccount: Account, dAppOwner: string) {
+	async registerDApp(dAppOwner: string) {
 		const payload = await this.invoke("RegisterDApp", [dAppOwner])
 		console.log("registerDApp response payload", payload)
 
@@ -75,22 +73,21 @@ export class LinkerEndpointChaincode {
 		console.log("OnResponse response payload", payload)
 	}
 
-	async addDAppChannel(fromAccount: Account, dAppChaincodeName: string, toChainId: string, toDAppContractAddress: string) {
-		const payload = await this.invoke("AddDAppChannel", [dAppChaincodeName, toChainId, toDAppContractAddress])
+	async addDAppChannel(dAppChaincodeName: string, toChainId: string, toDAppContractAddress: string) {
+		await this.invoke("AddDAppChannel", [dAppChaincodeName, toChainId, toDAppContractAddress])
 	}
 
-	async getChannelId(fromAccount: Account, dAppChaincodeName: string, toChainId: string, toDAppContractAddress: string) {
+	async getChannelId(dAppChaincodeName: string, toChainId: string, toDAppContractAddress: string) {
 		const dAppChannelId = await this.invoke("GetChannelId", [dAppChaincodeName, toChainId, toDAppContractAddress])
 		return dAppChannelId
 	}
 
-	async dAppChannelCount(fromAccount: Account, dAppChaincodeName: string) {
+	async dAppChannelCount(dAppChaincodeName: string) {
 		const dAppChannelCount = await this.invoke("DappChannelCount", [dAppChaincodeName])
 		return dAppChannelCount
 	}
 
 	async inboundMidxs(
-		signer: Account,
 		dAppAddress: string,
 		linkerChannelIdentity: string,
 		fromChainId: string,
@@ -103,7 +100,6 @@ export class LinkerEndpointChaincode {
 	}
 
 	async outboundMidxs(
-		signer: Account,
 		dAppAddress: string,
 		linkerChannelIdentity: string,
 		toChainId: string,
@@ -115,8 +111,8 @@ export class LinkerEndpointChaincode {
 		return outboundMidx
 	}
 
-	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: Account) {
-		return await this.invoke("CrossChainTest", [dAppChaincodeName, dAppOwnerAddr.address])
+	async crossChainTest(dAppChaincodeName: string, dAppOwnerAddr: ChaincodeActor) {
+		return await this.invoke("CrossChainTest", [dAppChaincodeName, resolveChaincodeSignerAddress(dAppOwnerAddr)])
 	}
 
 	async addEventListeners() {
