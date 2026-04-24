@@ -146,7 +146,8 @@ export class Chaincode {
 		args[0] = sig
 
 		const response = await this.submitTransaction(transaction, functionName, args)
-		return response.payload
+		// return response.payload
+		return response
 	}
 
 	public async queryWithSig(signerAccount: ChaincodeSigner, functionName: string, args: string[] = []): Promise<any> {

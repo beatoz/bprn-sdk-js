@@ -45,136 +45,136 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		return str === "true" || str === "1"
 	}
 
-	async grantChaincodeAddressPermissions(ownerAccount: ChaincodeSigner): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
+	async grantChaincodeAddressPermissions(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
 	}
 
 	prepareGrantChaincodeAddressPermissions(): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("GrantChaincodeAddressPermissions", [""])
 	}
 
-	async blockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
+	async blockSend(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "BlockSend", ["", address])
 	}
 
 	prepareBlockSend(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("BlockSend", ["", address])
 	}
 
-	async unblockSend(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
+	async unblockSend(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "UnblockSend", ["", address])
 	}
 
 	prepareUnblockSend(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("UnblockSend", ["", address])
 	}
 
-	async blockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
+	async blockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "BlockReceive", ["", address])
 	}
 
 	prepareBlockReceive(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("BlockReceive", ["", address])
 	}
 
-	async unblockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
+	async unblockReceive(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", address])
 	}
 
 	prepareUnblockReceive(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("UnblockReceive", ["", address])
 	}
 
-	async freeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
+	async freeze(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Freeze", ["", address])
 	}
 
 	prepareFreeze(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Freeze", ["", address])
 	}
 
-	async unfreeze(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
+	async unfreeze(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unfreeze", ["", address])
 	}
 
 	prepareUnfreeze(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Unfreeze", ["", address])
 	}
 
-	async grantMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
+	async grantMint(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantMint", ["", address])
 	}
 
 	prepareGrantMint(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("GrantMint", ["", address])
 	}
 
-	async grantBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
+	async grantBurn(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantBurn", ["", address])
 	}
 
 	prepareGrantBurn(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("GrantBurn", ["", address])
 	}
 
-	async pause(ownerAccount: ChaincodeSigner): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Pause", [""])
+	async pause(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Pause", [""])
 	}
 
 	preparePause(): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Pause", [""])
 	}
 
-	async unpause(ownerAccount: ChaincodeSigner): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Unpause", [""])
+	async unpause(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unpause", [""])
 	}
 
 	prepareUnpause(): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Unpause", [""])
 	}
 
-	async revokeMint(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
+	async revokeMint(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "RevokeMint", ["", address])
 	}
 
 	prepareRevokeMint(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("RevokeMint", ["", address])
 	}
 
-	async revokeBurn(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
+	async revokeBurn(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", address])
 	}
 
 	prepareRevokeBurn(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("RevokeBurn", ["", address])
 	}
 
-	async blacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
+	async blacklist(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Blacklist", ["", address])
 	}
 
 	prepareBlacklist(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Blacklist", ["", address])
 	}
 
-	async unblacklist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
+	async unblacklist(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unblacklist", ["", address])
 	}
 
 	prepareUnblacklist(address: string): PreparedSignatureInvocation {
 		return this.createExternalSigner().prepareInvocation("Unblacklist", ["", address])
 	}
 
-	async whitelist(ownerAccount: ChaincodeSigner, address: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "Whitelist", ["", address])
+	async whitelist(ownerAccount: ChaincodeSigner, address: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Whitelist", ["", address])
 	}
 
-	async setWhitelistMode(ownerAccount: ChaincodeSigner, enabled: boolean): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
+	async setWhitelistMode(ownerAccount: ChaincodeSigner, enabled: boolean): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
 	}
 
-	async setUserLimit(ownerAccount: ChaincodeSigner, address: string, limit: string): Promise<void> {
-		await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
+	async setUserLimit(ownerAccount: ChaincodeSigner, address: string, limit: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", address, limit])
 	}
 
 	async setRedemptionWallet(ownerAccount: ChaincodeSigner, redemptionWalletAddress: string): Promise<void> {

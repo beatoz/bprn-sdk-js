@@ -38,7 +38,7 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return this.erc20ChaincodeInfo
 	}
 
-	async mint(fromAccount: ChaincodeSigner, toAddress: Address, mintAmount: string) {
+	async mint(fromAccount: ChaincodeSigner, toAddress: Address, mintAmount: string): Promise<any> {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Mint", [emptySig, toAddress.toString(), mintAmount])
 	}
@@ -48,7 +48,7 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return this.createExternalSigner().prepareInvocation("Mint", [emptySig, toAddress.toString(), mintAmount])
 	}
 
-	async burn(fromAccount: ChaincodeSigner, burnAmount: string) {
+	async burn(fromAccount: ChaincodeSigner, burnAmount: string): Promise<any> {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Burn", [emptySig, burnAmount])
 	}
@@ -58,7 +58,7 @@ export abstract class Erc20CoreChaincode extends Chaincode {
 		return this.createExternalSigner().prepareInvocation("Burn", [emptySig, burnAmount])
 	}
 
-	async transfer(fromAccount: ChaincodeSigner, toAddress: Address, amount: string) {
+	async transfer(fromAccount: ChaincodeSigner, toAddress: Address, amount: string): Promise<any> {
 		const emptySig = ""
 		return await this.invokeWithSig(fromAccount, "Transfer", [emptySig, toAddress.toString(), amount])
 	}
