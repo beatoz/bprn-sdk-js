@@ -9,20 +9,20 @@ export { LinkerEndpointChaincodeV2 } from "./linker-endpoint-chaincode-v2"
 export { ChainIdRegistryChaincode } from "./chainid-registry-chaincode"
 export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
-export {
-	Btip10StablecoinChaincode,
-	PermissionPrefix,
-	PermissionStatus,
-} from "./btip10-stablecoin-chaincode"
+export { Btip10StablecoinChaincode, PermissionPrefix, PermissionStatus } from "./btip10-stablecoin-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"
 export { RedemptionEscrowChaincode, RedemptionEscrowRequest, RedemptionStatus } from "./redemption-escrow-chaincode"
+export { IssuanceEscrowChaincode, IssuanceEscrowRequest, IssuanceExecutionReadiness, IssuanceStatus } from "./issuance-escrow-chaincode"
 export {
-	IssuanceEscrowChaincode,
-	IssuanceEscrowRequest,
-	IssuanceExecutionReadiness,
-	IssuanceStatus,
-} from "./issuance-escrow-chaincode"
+	RefundEscrowChaincode,
+	RefundEscrowConfig,
+	RefundEscrowPreparedInvocation,
+	RefundMerchant,
+	RefundPayment,
+	RefundPaymentPreview,
+	RefundPaymentStatus,
+} from "./refund-escrow-chaincode"
 
 // Types
 export { Erc20CoinInfo } from "../types/erc20-coin-info"
