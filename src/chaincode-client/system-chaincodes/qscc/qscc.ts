@@ -84,6 +84,27 @@ export class Qscc extends Chaincode {
 		return result
 	}
 
+	async getBlockByTxID2(txID: string): Promise<Map<string, fabprotos.common.Block>> {
+		const proposalResponse = await this.queryWithEndorsers(
+			"GetBlockByTxID", [this.channelName, txID], this.bpnNetwork.getEndorsers()
+		)
+		if (!proposalResponse.responses || proposalResponse.responses.length === 0) {
+			throw new Error("QSCC GetBlockByTxID returned no responses")
+		}
+
+		//const result = new Map<string, fabprotos.common.IBlock>()
+		const result = new Map<string, fabprotos.common.Block>()
+		for (const response of proposalResponse.responses) {
+			const peer = response.connection.name
+			const payload = response.response?.payload
+			if (!payload) {
+				continue
+			}
+			result.set(peer, fabprotos.common.Block.decode(payload))
+		}
+		return result
+	}
+
 	async getTransactionByID(txID: string) {
 		return await this.query("GetTransactionByID", [this.channelName, txID])
 	}
