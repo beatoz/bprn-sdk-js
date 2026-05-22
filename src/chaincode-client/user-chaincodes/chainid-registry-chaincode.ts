@@ -7,7 +7,7 @@ export class ChainIdRegistryChaincode extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, chainIdRegistryChaincodeName: string): Promise<ChainIdRegistryChaincode> {
 		const contract = await bpnNetwork.getContract(chainIdRegistryChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new ChainIdRegistryChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new ChainIdRegistryChaincode(bpnNetwork, channelName, contract)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker) {

@@ -6,7 +6,7 @@ import { LifecycleChaincodeV2 } from "./lifecycle/lifecycle-chaincode"
 import { ChaincodeInfo } from "./lifecycle/chaincode/params"
 import { NetworkInfo, PeerEnvs } from "../bpn-network"
 import logger from "../logger"
-import { CliChaincodePackageCreater } from "./cli-chaincode-package-creater"
+import { CliChaincodePackageCreator } from "./cli-chaincode-package-creator"
 
 export enum PackagingMode {
 	PeerCli,
@@ -62,7 +62,7 @@ export class CliChaincodeDeployer {
 	}
 
 	packageManually(chaincodeInfo: ChaincodeInfo) {
-		new CliChaincodePackageCreater().createPackage(chaincodeInfo.packageDir, chaincodeInfo.name)
+		new CliChaincodePackageCreator().createPackage(chaincodeInfo.packageDir, chaincodeInfo.name)
 	}
 
 	packageUsingPeerCli(chaincodeInfo: ChaincodeInfo) {

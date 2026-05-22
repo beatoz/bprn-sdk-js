@@ -2,10 +2,12 @@
 
 import * as web3Account from "@beatoz/web3-accounts"
 import { Contract, Transaction } from "fabric-network"
-import { Account, SigMsg, generateChaincodeAddress } from "../types"
+import { Account, generateChaincodeAddress, SigMsg } from "../types"
 import { ContractListener, ListenerOptions } from "fabric-network/lib/events"
-import { BpnNetwork, BPRN_CHAIN_TYPE, ChainType } from "./bpn-network"
+import { BpnNetwork, ChainType } from "./bpn-network"
 import { ChainId } from "./chainid/chainid"
+import { CliChaincodeInvoker } from "../cli"
+import { Endorser, ProposalResponse } from "fabric-common"
 
 export interface ChaincodeSignatureRequest {
 	sigMsg: Uint8Array
@@ -27,11 +29,26 @@ export interface PreparedTransaction extends ChaincodeSignatureRequest {
 
 export class Chaincode {
 	constructor(
+		public readonly bpnNetwork: BpnNetwork,
 		public readonly channelName: string,
 		public readonly contract: Contract,
-		public readonly chainType: ChainType = BPRN_CHAIN_TYPE,
-		public readonly chainId: ChainId,
 	) {}
+
+	public readonly chainType: ChainType = this.bpnNetwork.chainType
+	public readonly chainId: ChainId = this.bpnNetwork.chainId
+
+	static async create(
+		bpnNetwork: BpnNetwork,
+		chaincodeName: string,
+	): Promise<Chaincode> {
+		const contract = await bpnNetwork.getContract(chaincodeName)
+		const channelName = bpnNetwork.getChannelName()
+		return new Chaincode(bpnNetwork, channelName, contract)
+	}
+
+	public invokeInitMethod(cliInvoker: CliChaincodeInvoker, initMethodName: string, args: any[]) {
+		return cliInvoker.invoke(this.channelName, this.chaincodeName(), initMethodName, args, true)
+	}
 
 	static async create2<T extends Chaincode>(
 		bpnNetwork: BpnNetwork,
@@ -222,5 +239,26 @@ export class Chaincode {
 		normalizedArgs[0] = sigHex
 		const response = await this.submitTransaction(transaction, functionName, normalizedArgs)
 		return response.payload
+	}
+
+	async queryWithEndorsers(functionName: string, args: string[], endorsers: Endorser[] = []): Promise<ProposalResponse> {
+		const channel = this.bpnNetwork.getChannel()
+		const idContext = this.bpnNetwork.getIdentityContext()
+
+		const query = channel.newQuery(this.chaincodeName())
+		query.build(idContext, {
+			fcn: functionName,
+			args: args,
+		})
+		query.sign(idContext)
+
+		if (endorsers.length == 0) {
+			endorsers = channel.getEndorsers()
+		}
+
+		return await query.send({
+			targets: endorsers,
+			requestTimeout: 30000,
+		});
 	}
 }  

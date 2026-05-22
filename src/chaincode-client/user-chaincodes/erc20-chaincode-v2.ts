@@ -9,7 +9,7 @@ export class Erc20ChaincodeV2 extends Erc20CoreChaincode {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string) {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Erc20ChaincodeV2(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new Erc20ChaincodeV2(bpnNetwork, channelName, contract)
 	}
 
 	init(

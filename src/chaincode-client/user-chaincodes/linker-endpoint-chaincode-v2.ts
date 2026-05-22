@@ -12,7 +12,7 @@ export class LinkerEndpointChaincodeV2 extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, linkerEndpointChaincodeName: string) {
 		const contract = await bpnNetwork.getContract(linkerEndpointChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new LinkerEndpointChaincodeV2(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new LinkerEndpointChaincodeV2(bpnNetwork, channelName, contract)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker, ownerAccount: Account) {

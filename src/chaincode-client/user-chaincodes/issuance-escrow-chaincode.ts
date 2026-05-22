@@ -42,7 +42,7 @@ export class IssuanceEscrowChaincode extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, issuanceEscrowChaincodeName: string): Promise<IssuanceEscrowChaincode> {
 		const contract = await bpnNetwork.getContract(issuanceEscrowChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new IssuanceEscrowChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new IssuanceEscrowChaincode(bpnNetwork, channelName, contract)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker, vaultWalletAddress: string) {
