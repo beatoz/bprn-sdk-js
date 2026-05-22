@@ -33,7 +33,7 @@ export class RedemptionEscrowChaincode extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, redemptionEscrowChaincodeName: string): Promise<RedemptionEscrowChaincode> {
 		const contract = await bpnNetwork.getContract(redemptionEscrowChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new RedemptionEscrowChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new RedemptionEscrowChaincode(bpnNetwork, channelName, contract)
 	}
 
 	init(cliInvoker: CliChaincodeInvoker, redemptionWalletAddress: string) {

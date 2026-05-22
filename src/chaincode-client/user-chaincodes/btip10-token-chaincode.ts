@@ -13,7 +13,7 @@ export class Btip10TokenChaincode extends Erc20CoreChaincode {
 	static async create(bpnNetwork: BpnNetwork, dAppChaincodeName: string): Promise<Btip10TokenChaincode> {
 		const contract = await bpnNetwork.getContract(dAppChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
-		return new Btip10TokenChaincode(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new Btip10TokenChaincode(bpnNetwork, channelName, contract)
 	}
 
 	async addEventListeners() {
