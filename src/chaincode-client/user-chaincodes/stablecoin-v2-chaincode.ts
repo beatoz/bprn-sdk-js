@@ -1,8 +1,9 @@
 /** @format */
 
-import { BpnNetwork, Chaincode } from "../../bpn-network"
+import { BpnNetwork, Chaincode, ChaincodeExternalSigner, ChaincodeSigner } from "../../bpn-network"
+import type { PreparedSignatureInvocation } from "../../bpn-network"
 import { CliChaincodeInvoker } from "../../cli"
-import { Account } from "../../types"
+import { Account, Address } from "../../types"
 
 export interface StablecoinV2Info {
 	chaincodeName: string
@@ -33,24 +34,76 @@ export class StablecoinV2Chaincode extends Chaincode {
 		return await this.invoke("SetChaincodeID", [chaincodeID])
 	}
 
-	async setMinter(account: string, enabled: boolean): Promise<any> {
-		return await this.invoke("SetMinter", [account, this.boolArg(enabled)])
+	async setLinkerEndpointID(chaincodeID: string): Promise<any> {
+		return await this.invoke("SetLinkerEndpointID", [chaincodeID])
 	}
 
-	async setBurner(account: string, enabled: boolean): Promise<any> {
-		return await this.invoke("SetBurner", [account, this.boolArg(enabled)])
+	async setLinkerNullifierID(chaincodeID: string): Promise<any> {
+		return await this.invoke("SetLinkerNullifierID", [chaincodeID])
 	}
 
-	async mint(to: string, amount: string): Promise<any> {
-		return await this.invoke("Mint", [to, amount])
+	async setExpectedSource(srcChainID: string, contractAddress: string, topic0: string = ""): Promise<any> {
+		return await this.invoke("SetExpectedSource", [srcChainID, contractAddress, topic0])
 	}
 
-	async burn(from: string, amount: string): Promise<any> {
-		return await this.invoke("Burn", [from, amount])
+	async setMinter(account: string | Address, enabled: boolean): Promise<any> {
+		return await this.invoke("SetMinter", [this.addressArg(account), this.boolArg(enabled)])
 	}
 
-	async transfer(from: string, to: string, amount: string): Promise<any> {
-		return await this.invoke("Transfer", [from, to, amount])
+	async setBurner(account: string | Address, enabled: boolean): Promise<any> {
+		return await this.invoke("SetBurner", [this.addressArg(account), this.boolArg(enabled)])
+	}
+
+	async mint(signer: ChaincodeSigner, to: string | Address, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "Mint", ["", this.addressArg(to), amount])
+	}
+
+	prepareMint(to: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("Mint", ["", this.addressArg(to), amount])
+	}
+
+	async burn(signer: ChaincodeSigner, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "Burn", ["", amount])
+	}
+
+	prepareBurn(amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("Burn", ["", amount])
+	}
+
+	async burnFrom(signer: ChaincodeSigner, from: string | Address, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "BurnFrom", ["", this.addressArg(from), amount])
+	}
+
+	prepareBurnFrom(from: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("BurnFrom", ["", this.addressArg(from), amount])
+	}
+
+	async transfer(signer: ChaincodeSigner, to: string | Address, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "Transfer", ["", this.addressArg(to), amount])
+	}
+
+	prepareTransfer(to: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("Transfer", ["", this.addressArg(to), amount])
+	}
+
+	async approve(signer: ChaincodeSigner, spender: string | Address, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "Approve", ["", this.addressArg(spender), amount])
+	}
+
+	prepareApprove(spender: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("Approve", ["", this.addressArg(spender), amount])
+	}
+
+	async transferFrom(signer: ChaincodeSigner, from: string | Address, to: string | Address, amount: string): Promise<any> {
+		return await this.invokeWithSig(signer, "TransferFrom", ["", this.addressArg(from), this.addressArg(to), amount])
+	}
+
+	prepareTransferFrom(from: string | Address, to: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("TransferFrom", ["", this.addressArg(from), this.addressArg(to), amount])
+	}
+
+	async executePreparedInvocation(prepared: PreparedSignatureInvocation, signature: string): Promise<any> {
+		return await this.createExternalSigner().invokePrepared(prepared, signature)
 	}
 
 	async name(): Promise<string> {
@@ -73,8 +126,12 @@ export class StablecoinV2Chaincode extends Chaincode {
 		return await this.query("Owner", [])
 	}
 
-	async balanceOf(address: string): Promise<string> {
-		return await this.query("BalanceOf", [address])
+	async balanceOf(address: string | Address): Promise<string> {
+		return await this.query("BalanceOf", [this.addressArg(address)])
+	}
+
+	async allowance(owner: string | Address, spender: string | Address): Promise<string> {
+		return await this.query("Allowance", [this.addressArg(owner), this.addressArg(spender)])
 	}
 
 	async info(): Promise<StablecoinV2Info> {
@@ -86,6 +143,14 @@ export class StablecoinV2Chaincode extends Chaincode {
 			owner: await this.owner(),
 			totalSupply: await this.totalSupply(),
 		}
+	}
+
+	private createExternalSigner(): ChaincodeExternalSigner {
+		return new ChaincodeExternalSigner(this)
+	}
+
+	private addressArg(value: string | Address): string {
+		return typeof value === "string" ? value : value.toString()
 	}
 
 	private boolArg(value: boolean): string {
