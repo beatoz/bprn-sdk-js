@@ -14,6 +14,27 @@ export interface StablecoinV2Info {
 	totalSupply: string
 }
 
+export interface StablecoinV2PermissionStatus {
+	frozen: boolean
+	blacklisted: boolean
+	whitelisted: boolean
+	sendBlocked: boolean
+	receiveBlocked: boolean
+	mintRole: boolean
+	burnRole: boolean
+	userLimit: string
+	paused: boolean
+}
+
+export type StablecoinV2PermissionPrefix =
+	| "frozen"
+	| "blacklist"
+	| "whitelist"
+	| "blockSend"
+	| "blockReceive"
+	| "mintRole"
+	| "burnRole"
+
 export class StablecoinV2Chaincode extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork, stablecoinChaincodeName: string): Promise<StablecoinV2Chaincode> {
 		const contract = await bpnNetwork.getContract(stablecoinChaincodeName)
@@ -52,6 +73,96 @@ export class StablecoinV2Chaincode extends Chaincode {
 
 	async setBurner(account: string | Address, enabled: boolean): Promise<any> {
 		return await this.invoke("SetBurner", [this.addressArg(account), this.boolArg(enabled)])
+	}
+
+	async getPermissionStatus(address: string | Address): Promise<StablecoinV2PermissionStatus> {
+		const raw = await this.query("GetPermissionStatus", [this.addressArg(address)])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as StablecoinV2PermissionStatus
+	}
+
+	async getAddressesWithPermission(permission: StablecoinV2PermissionPrefix | string): Promise<string[]> {
+		const raw = await this.query("GetAddressesWithPermission", [permission])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as string[]
+	}
+
+	async isPaused(): Promise<boolean> {
+		const raw = await this.query("IsPaused", [])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return str === "true" || str === "1"
+	}
+
+	async grantChaincodeAddressPermissions(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantChaincodeAddressPermissions", [""])
+	}
+
+	async blockSend(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "BlockSend", ["", this.addressArg(address)])
+	}
+
+	async unblockSend(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "UnblockSend", ["", this.addressArg(address)])
+	}
+
+	async blockReceive(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "BlockReceive", ["", this.addressArg(address)])
+	}
+
+	async unblockReceive(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "UnblockReceive", ["", this.addressArg(address)])
+	}
+
+	async freeze(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Freeze", ["", this.addressArg(address)])
+	}
+
+	async unfreeze(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unfreeze", ["", this.addressArg(address)])
+	}
+
+	async grantMint(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantMint", ["", this.addressArg(address)])
+	}
+
+	async revokeMint(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "RevokeMint", ["", this.addressArg(address)])
+	}
+
+	async grantBurn(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "GrantBurn", ["", this.addressArg(address)])
+	}
+
+	async revokeBurn(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "RevokeBurn", ["", this.addressArg(address)])
+	}
+
+	async pause(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Pause", [""])
+	}
+
+	async unpause(ownerAccount: ChaincodeSigner): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unpause", [""])
+	}
+
+	async blacklist(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Blacklist", ["", this.addressArg(address)])
+	}
+
+	async unblacklist(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Unblacklist", ["", this.addressArg(address)])
+	}
+
+	async whitelist(ownerAccount: ChaincodeSigner, address: string | Address): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "Whitelist", ["", this.addressArg(address)])
+	}
+
+	async setWhitelistMode(ownerAccount: ChaincodeSigner, enabled: boolean): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "SetWhitelistMode", ["", enabled ? "1" : "0"])
+	}
+
+	async setUserLimit(ownerAccount: ChaincodeSigner, address: string | Address, limit: string): Promise<any> {
+		return await this.invokeWithSig(ownerAccount, "SetUserLimit", ["", this.addressArg(address), limit])
 	}
 
 	async mint(signer: ChaincodeSigner, to: string | Address, amount: string): Promise<any> {
