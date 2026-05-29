@@ -1,13 +1,15 @@
 /** @format */
 
-import * as winston from "winston"
+// Keep logger independent from ambient winston v2 typings pulled by Fabric SDK.
+// Runtime dependency is winston v3, but downstream Git installs may expose v2 types.
+const winston: any = require("winston")
 
 const logFormat = winston.format.combine(
 	winston.format.timestamp({
 		format: "YYYY-MM-DD HH:mm:ss",
 	}),
 	winston.format.errors({ stack: true }),
-	winston.format.printf(({ timestamp, level, message, stack }) => {
+	winston.format.printf(({ timestamp, level, message, stack }: any) => {
 		return `${timestamp} [${level.toUpperCase()}]: ${stack || message}`
 	})
 )

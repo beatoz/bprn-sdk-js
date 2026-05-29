@@ -14,25 +14,25 @@
   },
   "dependencies": {
     "ethers": "^6.15.0",
-    "winston": "^3.18.3",
-      "fabric-ca-client": "2.2",
-      "fabric-network": "2.2",
-      "fabric-protos": "^2.2.20"
-	},
+    "fabric-ca-client": "2.2",
+    "fabric-network": "2.2",
+    "fabric-protos": "^2.2.20",
+    "winston": "^3.18.3"
+  },
   "devDependencies": {
     "@beatoz/web3-accounts": "^1.6.5",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.6.1",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
     "fabric-ca-client": "2.2",
     "fabric-network": "2.2",
-      "fabric-protos": "^2.2.20",
+    "fabric-protos": "^2.2.20",
     "jest": "^30.2.0",
     "rlp": "^3.0.0",
     "ts-jest": "^29.4.4",
     "typescript": "^5.5.3",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
     "typescript-eslint": "^8.20.0"
   },
   "exports": {
@@ -55,6 +55,11 @@
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
+    },
+    "./bpn-network/chaincode": {
+      "import": "./dist/bpn-network/chaincode.js",
+      "require": "./dist/bpn-network/chaincode.js",
+      "types": "./dist/bpn-network/chaincode.d.ts"
     },
     "./cli": {
       "import": "./dist/cli/index.js",
