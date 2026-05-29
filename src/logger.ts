@@ -1,6 +1,6 @@
 /** @format */
 
-import winston from "winston"
+import * as winston from "winston"
 
 const logFormat = winston.format.combine(
 	winston.format.timestamp({
