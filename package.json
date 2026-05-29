@@ -72,5 +72,10 @@
       "types": "./dist/service/index.d.ts"
     }
   },
+  "typesVersions": {
+    "*": {
+      "bpn-network/chaincode": ["dist/bpn-network/chaincode.d.ts"]
+    }
+  },
   "private": true
 }
