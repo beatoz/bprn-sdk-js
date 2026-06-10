@@ -1,6 +1,6 @@
 /** @format */
 import { BpnNetwork, Chaincode } from "../../../bpn-network"
-import { BlockDecoder } from "../../../blockparser"
+import { BlockDecoder, DecodedBlock } from "../../../blockparser"
 import * as fabprotos from "fabric-protos"
 import Long from "long"
 
@@ -16,7 +16,7 @@ export class Qscc extends Chaincode {
 	static async create(bpnNetwork: BpnNetwork): Promise<Qscc> {
 		const channelName = bpnNetwork.getChannelName()
 		const contract = await bpnNetwork.getContract('qscc')
-		return new Qscc(channelName, contract, bpnNetwork.chainType, bpnNetwork.chainId)
+		return new Qscc(bpnNetwork, channelName, contract)
 	}
 
 	async getBlockByNumber(blockNumber: number) {
@@ -35,12 +35,53 @@ export class Qscc extends Chaincode {
 		)
 	}
 
+	async getChainInfoByPeer(): Promise<Map<string, BlockchainInfo>> {
+		const proposalResponse = await this.queryWithEndorsers("GetChainInfo", [this.channelName], this.bpnNetwork.getEndorsers())
+		if (!proposalResponse.responses || proposalResponse.responses.length === 0) {
+			throw new Error("QSCC GetChainInfo returned no responses")
+		}
+
+		const result = new Map<string, BlockchainInfo>()
+		for (const response of proposalResponse.responses) {
+			const peer = response.connection.name
+
+			const payload = response.response?.payload
+			if (!payload) {
+				continue
+			}
+			const info = fabprotos.common.BlockchainInfo.decode(payload)
+			result.set(
+				peer,
+				new BlockchainInfo(
+					info.height as Long,
+					Buffer.from(info.currentBlockHash).toString("hex"),
+					Buffer.from(info.previousBlockHash).toString("hex")
+				)
+			)
+		}
+		return result
+	}
+
 	async getBlockByHash(blockHash: string) {
 		return await this.query("GetBlockByHash", [this.channelName, blockHash])
 	}
 
-	async getBlockByTxID(txID: string) {
-		return await this.query("GetBlockByTxID", [this.channelName, txID])
+	async getBlockByTxID(txID: string): Promise<Map<string, DecodedBlock>> {
+		const proposalResponse = await this.queryWithEndorsers("GetBlockByTxID", [this.channelName, txID], this.bpnNetwork.getEndorsers())
+		if (!proposalResponse.responses || proposalResponse.responses.length === 0) {
+			throw new Error("QSCC GetBlockByTxID returned no responses")
+		}
+
+		const result = new Map<string, DecodedBlock>()
+		for (const response of proposalResponse.responses) {
+			const peer = response.connection.name
+			const payload = response.response?.payload
+			if (!payload) {
+				continue
+			}
+			result.set(peer, BlockDecoder.decodeBlock(payload))
+		}
+		return result
 	}
 
 	async getTransactionByID(txID: string) {

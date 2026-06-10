@@ -33,10 +33,9 @@ export class Btip10StablecoinChaincode extends Btip10TokenChaincode {
 		const contract = await bpnNetwork.getContract(stablecoinChaincodeName)
 		const channelName = bpnNetwork.getChannelName()
 		return new Btip10StablecoinChaincode(
+			bpnNetwork,
 			channelName,
 			contract,
-			bpnNetwork.chainType,
-			bpnNetwork.chainId,
 		)
 	}
 

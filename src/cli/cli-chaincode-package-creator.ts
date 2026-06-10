@@ -5,7 +5,7 @@ import fs from "fs"
 import logger from "../logger"
 import { Cli } from "./peer-cli"
 
-export class CliChaincodePackageCreater extends Cli {
+export class CliChaincodePackageCreator extends Cli {
 	createPackage(packageDirPath: string, chaincodeName: string) {
 		const metadataJsonFileName = this.createMetadata(packageDirPath, chaincodeName)
 		//const codeTarGzFileName = this.copyCodeTarGz(packageDirPath, chaincodeName)
