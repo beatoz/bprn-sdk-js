@@ -36,3 +36,7 @@ export type { OrdererEnvs, PeerEnvs } from "./envs"
 // Environment readers
 export { OrdererEnvReader } from "./env-reader/orderer-env-reader"
 export { PeerEnvReader } from "./env-reader/peer-env-reader"
+
+// Crypto config classes
+export { CryptoConfig } from "./crypto-config/crypto-config"
+export { CryptoConfigPath } from "./crypto-config/crypto-config-path"
