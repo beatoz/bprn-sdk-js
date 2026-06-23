@@ -11,6 +11,20 @@ export { TokenBtip10Chaincode } from "./token-btip10-chaincode"
 export { Btip10TokenChaincode } from "./btip10-token-chaincode"
 export { Btip10StablecoinChaincode } from "./btip10-stablecoin-chaincode"
 export type { PermissionPrefix, PermissionStatus } from "./btip10-stablecoin-chaincode"
+export { Btip34PermissionTokenChaincode } from "./btip34-permission-token-chaincode"
+export type {
+	Btip34PermissionPrefix,
+	Btip34PermissionStatus,
+	Btip34PermissionTokenInfo,
+	Btip34SignedInvokeResult,
+	Btip34TransferResult,
+} from "./btip34-permission-token-chaincode"
+export { StablecoinV2Chaincode } from "./stablecoin-v2-chaincode"
+export type {
+	StablecoinV2Info,
+	StablecoinV2PermissionPrefix,
+	StablecoinV2PermissionStatus,
+} from "./stablecoin-v2-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"
 export { RedemptionEscrowChaincode } from "./redemption-escrow-chaincode"
