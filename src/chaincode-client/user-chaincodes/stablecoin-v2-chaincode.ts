@@ -181,6 +181,32 @@ export class StablecoinV2Chaincode extends Chaincode {
 		return this.createExternalSigner().prepareInvocation("Burn", ["", amount])
 	}
 
+	async postAmount(
+		signer: ChaincodeSigner,
+		dstChainId: string,
+		targetDApp: string | Address,
+		dstAccount: string | Address,
+		amount: string
+	): Promise<any> {
+		return await this.invokeWithSig(signer, "PostAmount", [
+			"",
+			dstChainId,
+			this.addressArg(targetDApp),
+			this.addressArg(dstAccount),
+			amount,
+		])
+	}
+
+	preparePostAmount(dstChainId: string, targetDApp: string | Address, dstAccount: string | Address, amount: string): PreparedSignatureInvocation {
+		return this.createExternalSigner().prepareInvocation("PostAmount", [
+			"",
+			dstChainId,
+			this.addressArg(targetDApp),
+			this.addressArg(dstAccount),
+			amount,
+		])
+	}
+
 	async burnFrom(signer: ChaincodeSigner, from: string | Address, amount: string): Promise<any> {
 		return await this.invokeWithSig(signer, "BurnFrom", ["", this.addressArg(from), amount])
 	}
