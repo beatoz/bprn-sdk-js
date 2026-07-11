@@ -10,7 +10,7 @@ export class Signer {
 		this.account = account
 	}
 
-	sign(sigMsg: Buffer) {
+	sign(sigMsg: Buffer): ReturnType<typeof web3Account.sign> {
 		const signature = web3Account.sign(sigMsg, this.account.requirePrivateKey("Signer.sign"))
 		return signature
 	}
