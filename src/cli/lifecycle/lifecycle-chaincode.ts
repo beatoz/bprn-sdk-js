@@ -7,9 +7,10 @@ import { QueryInstalled } from "./chaincode/queryInstalled"
 import { Commit } from "./chaincode/commit"
 import { Install } from "./chaincode/install"
 import { CheckCommitReadiness } from "./chaincode/checkcommitreadiness"
-import { ChaincodeInfo } from "./chaincode/params"
+import { ChaincodeDefinition } from "./chaincode/params"
 import { OrdererInfo } from "../../bpn-network"
 import { QueryCommitted } from "./chaincode/querycommitted"
+import { QueryApproved } from "./chaincode/queryapproved"
 
 export class LifecycleChaincodeV2 {
 	readonly parentLifecycle: Lifecycle
@@ -30,7 +31,7 @@ export class LifecycleChaincodeV2 {
 		return new Install(this)
 	}
 
-	approve(ccInfo: ChaincodeInfo, ordererInfo: OrdererInfo): Approve {
+	approve(ccInfo: ChaincodeDefinition, ordererInfo: OrdererInfo): Approve {
 		return new Approve(ccInfo, ordererInfo, this)
 	}
 
@@ -40,6 +41,10 @@ export class LifecycleChaincodeV2 {
 
 	queryCommitted(): QueryCommitted {
 		return new QueryCommitted(this)
+	}
+
+	queryApproved(): QueryApproved {
+		return new QueryApproved(this)
 	}
 
 	checkCommitReadiness() {

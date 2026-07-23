@@ -1,6 +1,6 @@
 /** @format */
 
-import { ChaincodeInfo } from "./params"
+import { ChaincodeDefinition } from "./params"
 import { OrdererInfo } from "../../../bpn-network"
 import { BaseLifecycleChaincode } from "./base"
 import { LifecycleChaincodeV2 } from "../lifecycle-chaincode"
@@ -8,7 +8,7 @@ import { FlagBuilder } from "../flag/flag-builder"
 
 export class Approve extends BaseLifecycleChaincode {
 	constructor(
-		readonly ccInfo: ChaincodeInfo,
+		readonly ccInfo: ChaincodeDefinition,
 		readonly ordererInfo: OrdererInfo,
 		parent: LifecycleChaincodeV2
 	) {

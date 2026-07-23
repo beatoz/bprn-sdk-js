@@ -5,8 +5,7 @@ import { BaseLifecycleChaincode } from "./base"
 
 export class Package extends BaseLifecycleChaincode {
 	flag(ccInfo: ChaincodeInfo) {
-		const outputFile = `${ccInfo.packageDir}/${ccInfo.name}.tar.gz`
-		return `${outputFile} --path ${ccInfo.chaincodeSourceDir} --lang ${ccInfo.language} --label ${ccInfo.label}`
+		return `"${ccInfo.packageFilePath}" --path "${ccInfo.chaincodeSourceDir}" --lang ${ccInfo.language} --label "${ccInfo.label}"`
 	}
 
 	goVendorCommand(ccInfo: ChaincodeInfo) {

@@ -1,12 +1,12 @@
 /** @format */
 
-import { ChaincodeInfo } from "./params"
+import { ChaincodeDefinition } from "./params"
 import { OrdererInfo, PeerInfo } from "../../../bpn-network"
 import { BaseLifecycleChaincode } from "./base"
 import { FlagBuilder } from "../flag/flag-builder"
 
 export class Commit extends BaseLifecycleChaincode {
-	flag(ccInfo: ChaincodeInfo, peerInfos: PeerInfo[], ordererInfo: OrdererInfo) {
+	flag(ccInfo: ChaincodeDefinition, peerInfos: PeerInfo[], ordererInfo: OrdererInfo) {
 		return new FlagBuilder()
 			.ordererFlag(ordererInfo)
 			.peerAddresses(peerInfos)
@@ -18,7 +18,7 @@ export class Commit extends BaseLifecycleChaincode {
 			.build()
 	}
 
-	command(ccInfo: ChaincodeInfo, peerInfos: PeerInfo[], ordererInfo: OrdererInfo): string {
+	command(ccInfo: ChaincodeDefinition, peerInfos: PeerInfo[], ordererInfo: OrdererInfo): string {
 		return this.parentLifecycleChaincode.command() + "commit " + this.flag(ccInfo, peerInfos, ordererInfo)
 	}
 }

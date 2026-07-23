@@ -16,6 +16,20 @@ export { Commit } from "./lifecycle/chaincode/commit"
 export { Install } from "./lifecycle/chaincode/install"
 export { Package } from "./lifecycle/chaincode/package"
 export { QueryCommitted } from "./lifecycle/chaincode/querycommitted"
+export { QueryApproved } from "./lifecycle/chaincode/queryapproved"
 export { QueryInstalled } from "./lifecycle/chaincode/queryInstalled"
+export { ChaincodePackageIdCalculator } from "./lifecycle/chaincode/package-id-calculator"
+export type {
+	ChaincodeDefinition,
+	ChaincodeDefinitionDeployDetails,
+	ChaincodeDefinitionEnsureDetails,
+	ChaincodeDeployDetails,
+	ChaincodeLanguage,
+	ChaincodePackageDetails,
+	ChaincodePackageInstallDetails,
+	CommittedChaincodeDefinition,
+	InstalledChaincodePackage,
+	ApprovedChaincodeDefinition,
+} from "./lifecycle/chaincode/params"
 export { FlagBuilder } from "./lifecycle/flag/flag-builder"
 export { CommonFlagFactory } from "./lifecycle/flag/common-flag-factory"

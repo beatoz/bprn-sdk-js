@@ -1,12 +1,12 @@
 /** @format */
 
-import { ChaincodeInfo } from "./params"
+import { ChaincodeDefinition } from "./params"
 import { OrdererInfo } from "../../../bpn-network"
 import { FlagBuilder } from "../flag/flag-builder"
 import { BaseLifecycleChaincode } from "./base"
 
 export class CheckCommitReadiness extends BaseLifecycleChaincode {
-	flag(ccInfo: ChaincodeInfo, ordererInfo: OrdererInfo) {
+	flag(ccInfo: ChaincodeDefinition, ordererInfo: OrdererInfo) {
 		//const ordererFlags = CommonFlagFactory.ordererFlags(ordererInfo)
 		//const cmd = `--channelID ${ccInfo.channelName} --name ${ccInfo.name} --version ${ccInfo.version} --sequence ${ccInfo.sequence}`
 		return new FlagBuilder()
@@ -21,7 +21,7 @@ export class CheckCommitReadiness extends BaseLifecycleChaincode {
 		//return `${ordererFlags} ${cmd}`;
 	}
 
-	command(ccInfo: ChaincodeInfo, ordererInfo: OrdererInfo): string {
+	command(ccInfo: ChaincodeDefinition, ordererInfo: OrdererInfo): string {
 		return this.parentLifecycleChaincode.command() + "checkcommitreadiness " + this.flag(ccInfo, ordererInfo)
 	}
 }
