@@ -49,6 +49,7 @@ export interface Btip34PendingPayment {
 	from: string
 	handlerDApp: string
 	acceptedTo?: string
+	settlementMode?: Btip34SettlementMode
 	amount: string
 	requestTxId?: string
 }
@@ -61,11 +62,13 @@ export interface Btip34SettlementRoute {
 
 export type Btip34LinkerStatus = "ACCEPTED" | "REJECTED"
 export type Btip34AssetOutcome = "SETTLED" | "REFUNDED"
+export type Btip34SettlementMode = "REMOTE_HANDLER" | "FIXED_ROUTE"
 
 export interface Btip34FinalizedPayment {
 	correlationId: string
 	linkerStatus: Btip34LinkerStatus
 	assetOutcome: Btip34AssetOutcome
+	settlementMode: Btip34SettlementMode
 	destinationChainId: string
 	targetDApp: string
 	from: string
@@ -274,6 +277,30 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 				this.addressArg(beneficiaryAddress),
 				memoHex,
 			]),
+		)
+	}
+
+	async payToBPuNWithSettlementRoute(
+		signer: ChaincodeSigner,
+		destinationChainId: string,
+		toDAppAddress: string | Address,
+		amount: string,
+		beneficiaryAddress: string | Address,
+		memoHex: string = "",
+	): Promise<Btip34TransferResult> {
+		return this.asTransferResult(
+			await this.invokeWithSignedResult<string>(
+				signer,
+				"PayToBPuNWithSettlementRoute",
+				[
+					"",
+					destinationChainId,
+					this.addressArg(toDAppAddress),
+					amount,
+					this.addressArg(beneficiaryAddress),
+					memoHex,
+				],
+			),
 		)
 	}
 

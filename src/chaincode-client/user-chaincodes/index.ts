@@ -23,6 +23,7 @@ export type {
 	Btip34FinalizedPayment,
 	Btip34LinkerStatus,
 	Btip34AssetOutcome,
+	Btip34SettlementMode,
 } from "./btip34-permission-token-chaincode"
 export { StablecoinV2Chaincode } from "./stablecoin-v2-chaincode"
 export type {
@@ -34,6 +35,7 @@ export type {
 	StablecoinV2FinalizedPayment,
 	StablecoinV2LinkerStatus,
 	StablecoinV2AssetOutcome,
+	StablecoinV2SettlementMode,
 } from "./stablecoin-v2-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"

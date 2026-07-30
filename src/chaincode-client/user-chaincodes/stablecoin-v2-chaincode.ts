@@ -10,6 +10,7 @@ import {
 	type Btip34FinalizedPayment,
 	type Btip34LinkerStatus,
 	type Btip34AssetOutcome,
+	type Btip34SettlementMode,
 } from "./btip34-permission-token-chaincode"
 import type { BpnNetwork } from "../../bpn-network"
 
@@ -32,3 +33,4 @@ export type StablecoinV2SettlementRoute = Btip34SettlementRoute
 export type StablecoinV2FinalizedPayment = Btip34FinalizedPayment
 export type StablecoinV2LinkerStatus = Btip34LinkerStatus
 export type StablecoinV2AssetOutcome = Btip34AssetOutcome
+export type StablecoinV2SettlementMode = Btip34SettlementMode
