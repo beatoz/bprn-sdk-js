@@ -18,12 +18,22 @@ export type {
 	Btip34PermissionTokenInfo,
 	Btip34SignedInvokeResult,
 	Btip34TransferResult,
+	Btip34PendingPayment,
+	Btip34SettlementRoute,
+	Btip34FinalizedPayment,
+	Btip34LinkerStatus,
+	Btip34AssetOutcome,
 } from "./btip34-permission-token-chaincode"
 export { StablecoinV2Chaincode } from "./stablecoin-v2-chaincode"
 export type {
 	StablecoinV2Info,
 	StablecoinV2PermissionPrefix,
 	StablecoinV2PermissionStatus,
+	StablecoinV2PendingPayment,
+	StablecoinV2SettlementRoute,
+	StablecoinV2FinalizedPayment,
+	StablecoinV2LinkerStatus,
+	StablecoinV2AssetOutcome,
 } from "./stablecoin-v2-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"

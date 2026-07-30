@@ -45,6 +45,38 @@ export interface Btip34TransferResult extends Btip34SignedInvokeResult<string> {
 	txEventRoot: string
 }
 
+export interface Btip34PendingPayment {
+	from: string
+	handlerDApp: string
+	acceptedTo?: string
+	amount: string
+	requestTxId?: string
+}
+
+export interface Btip34SettlementRoute {
+	destinationChainId: string
+	targetDApp: string
+	settlementAddress: string
+}
+
+export type Btip34LinkerStatus = "ACCEPTED" | "REJECTED"
+export type Btip34AssetOutcome = "SETTLED" | "REFUNDED"
+
+export interface Btip34FinalizedPayment {
+	correlationId: string
+	linkerStatus: Btip34LinkerStatus
+	assetOutcome: Btip34AssetOutcome
+	destinationChainId: string
+	targetDApp: string
+	from: string
+	handlerDApp: string
+	acceptedTo: string
+	finalRecipient: string
+	amount: string
+	requestTxId?: string
+	resultTxId: string
+}
+
 export class Btip34PermissionTokenChaincode extends Chaincode {
 	static async create(
 		bpnNetwork: BpnNetwork,
@@ -134,6 +166,28 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 		return await this.invoke("SetExpectedResultHandler", [chaincodeID])
 	}
 
+	async setSettlementRoute(
+		destinationChainId: string,
+		targetDApp: string | Address,
+		settlementAddress: string | Address,
+	): Promise<unknown> {
+		return await this.invoke("SetSettlementRoute", [
+			destinationChainId,
+			this.addressArg(targetDApp),
+			this.addressArg(settlementAddress),
+		])
+	}
+
+	async clearSettlementRoute(
+		destinationChainId: string,
+		targetDApp: string | Address,
+	): Promise<unknown> {
+		return await this.invoke("ClearSettlementRoute", [
+			destinationChainId,
+			this.addressArg(targetDApp),
+		])
+	}
+
 	async mint(
 		signer: ChaincodeSigner,
 		to: string | Address,
@@ -205,6 +259,7 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 
 	async payToBPuN(
 		signer: ChaincodeSigner,
+		destinationChainId: string,
 		toDAppAddress: string | Address,
 		amount: string,
 		beneficiaryAddress: string | Address,
@@ -213,6 +268,7 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 		return this.asTransferResult(
 			await this.invokeWithSignedResult<string>(signer, "PayToBPuN", [
 				"",
+				destinationChainId,
 				this.addressArg(toDAppAddress),
 				amount,
 				this.addressArg(beneficiaryAddress),
@@ -249,10 +305,32 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 		])
 	}
 
-	async getPending(correlationIdHex: string): Promise<any> {
+	async getPending(
+		correlationIdHex: string,
+	): Promise<Btip34PendingPayment | null> {
 		const raw = await this.query("GetPending", [correlationIdHex])
 		const str = typeof raw === "string" ? raw : String(raw)
 		return str ? JSON.parse(str) : null
+	}
+
+	async getFinalizedPayment(
+		correlationIdHex: string,
+	): Promise<Btip34FinalizedPayment> {
+		const raw = await this.query("GetFinalizedPayment", [correlationIdHex])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as Btip34FinalizedPayment
+	}
+
+	async getSettlementRoute(
+		destinationChainId: string,
+		targetDApp: string | Address,
+	): Promise<Btip34SettlementRoute> {
+		const raw = await this.query("GetSettlementRoute", [
+			destinationChainId,
+			this.addressArg(targetDApp),
+		])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as Btip34SettlementRoute
 	}
 
 	async getPermissionStatus(

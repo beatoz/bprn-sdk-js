@@ -5,6 +5,11 @@ import {
 	type Btip34PermissionPrefix,
 	type Btip34PermissionStatus,
 	type Btip34PermissionTokenInfo,
+	type Btip34PendingPayment,
+	type Btip34SettlementRoute,
+	type Btip34FinalizedPayment,
+	type Btip34LinkerStatus,
+	type Btip34AssetOutcome,
 } from "./btip34-permission-token-chaincode"
 import type { BpnNetwork } from "../../bpn-network"
 
@@ -22,3 +27,8 @@ export class StablecoinV2Chaincode extends Btip34PermissionTokenChaincode {
 export type StablecoinV2Info = Btip34PermissionTokenInfo
 export type StablecoinV2PermissionStatus = Btip34PermissionStatus
 export type StablecoinV2PermissionPrefix = Btip34PermissionPrefix
+export type StablecoinV2PendingPayment = Btip34PendingPayment
+export type StablecoinV2SettlementRoute = Btip34SettlementRoute
+export type StablecoinV2FinalizedPayment = Btip34FinalizedPayment
+export type StablecoinV2LinkerStatus = Btip34LinkerStatus
+export type StablecoinV2AssetOutcome = Btip34AssetOutcome
