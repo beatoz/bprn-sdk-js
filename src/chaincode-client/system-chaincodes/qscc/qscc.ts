@@ -19,7 +19,7 @@ export class Qscc extends Chaincode {
 		return new Qscc(bpnNetwork, channelName, contract)
 	}
 
-	async getBlockByNumber(blockNumber: number) {
+	async getBlockByNumber(blockNumber: Long) {
 		const blockRaw = await this.queryRaw("GetBlockByNumber", [this.channelName, blockNumber.toString()])
 		return BlockDecoder.decodeBlock(blockRaw)
 	}

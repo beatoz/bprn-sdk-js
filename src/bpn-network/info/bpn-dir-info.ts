@@ -39,8 +39,7 @@ export class BpnDirInfo {
 	}
 
 	getAbsoluteFilePath(relativePath: string): string {
-		return path.join(this.absoluteConfigDir, relativePath)
-		//return `${this.absoluteConfigDir}/${relativePath}`
+		return path.isAbsolute(relativePath) ? relativePath : path.join(this.absoluteConfigDir, relativePath)
 	}
 
 	rootDir() {

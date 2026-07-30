@@ -26,4 +26,15 @@ export class SigMsg {
 	serialize() {
 		return rlp.encode(this.toArray())
 	}
+
+	static deserialize(serialized: Uint8Array): SigMsg {
+		const decoded = rlp.decode(serialized) as Uint8Array[]
+
+		const txid = Buffer.from(decoded[0]).toString("hex")
+		const chaincodeName = Buffer.from(decoded[1]).toString("utf-8")
+		const chaincodeMethodName = Buffer.from(decoded[2]).toString("utf-8")
+		const chaincodeParams = decoded.slice(3).map((param) => Buffer.from(param).toString("utf-8"))
+
+		return new SigMsg(txid, chaincodeName, chaincodeMethodName, chaincodeParams)
+	}
 }
