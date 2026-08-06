@@ -27,6 +27,12 @@ export interface Btip34PermissionStatus {
 	paused: boolean
 }
 
+export interface Btip34ComplianceRoles {
+	owner: string
+	blacklister: string
+	pauser: string
+}
+
 export type Btip34PermissionPrefix =
 	| "frozen"
 	| "blacklist"
@@ -277,6 +283,34 @@ export class Btip34PermissionTokenChaincode extends Chaincode {
 		const raw = await this.query("IsPaused", [])
 		const str = typeof raw === "string" ? raw : String(raw)
 		return str === "true" || str === "1"
+	}
+
+	async blacklister(): Promise<string> {
+		return await this.query("Blacklister", [])
+	}
+
+	async pauser(): Promise<string> {
+		return await this.query("Pauser", [])
+	}
+
+	async getComplianceRoles(): Promise<Btip34ComplianceRoles> {
+		const raw = await this.query("GetComplianceRoles", [])
+		const str = typeof raw === "string" ? raw : String(raw)
+		return JSON.parse(str) as Btip34ComplianceRoles
+	}
+
+	async setBlacklister(
+		ownerAccount: ChaincodeSigner,
+		address: string | Address,
+	): Promise<Btip34SignedInvokeResult> {
+		return await this.permissionCall(ownerAccount, "SetBlacklister", address)
+	}
+
+	async setPauser(
+		ownerAccount: ChaincodeSigner,
+		address: string | Address,
+	): Promise<Btip34SignedInvokeResult> {
+		return await this.permissionCall(ownerAccount, "SetPauser", address)
 	}
 
 	async grantChaincodeAddressPermissions(

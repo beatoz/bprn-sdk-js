@@ -15,6 +15,7 @@ export { Btip34PermissionTokenChaincode } from "./btip34-permission-token-chainc
 export type {
 	Btip34PermissionPrefix,
 	Btip34PermissionStatus,
+	Btip34ComplianceRoles,
 	Btip34PermissionTokenInfo,
 	Btip34SignedInvokeResult,
 	Btip34TransferResult,
@@ -24,6 +25,7 @@ export type {
 	StablecoinV2Info,
 	StablecoinV2PermissionPrefix,
 	StablecoinV2PermissionStatus,
+	StablecoinV2ComplianceRoles,
 } from "./stablecoin-v2-chaincode"
 export { DappChaincode } from "./dapp-chaincode"
 export { VaultChaincodeV2 } from "./vault-chaincode-v2"
